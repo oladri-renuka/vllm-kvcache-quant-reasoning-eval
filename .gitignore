@@ -1,0 +1,40 @@
+# Virtual environment
+venv/
+venv_*/
+env/
+ENV/
+
+# vLLM repository (cloned by setup.sh)
+vllm_repo/
+
+# Results (large and experiment-specific)
+results/
+
+# Data files (generated)
+data/testset.jsonl
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+
+# Temporary files
+.tmp/
+tmp/
+*.tmp
