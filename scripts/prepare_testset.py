@@ -22,7 +22,7 @@ def get_aime_problems():
         # Try to load AIME 2025 from HuggingFace
         print("Attempting to load AIME 2025 from HuggingFace...")
         try:
-            dataset = load_dataset("HuggingFaceH4/aime_2025", split="test")
+            dataset = load_dataset("MathArena/aime_2025", split="train")
             aime_list = list(dataset)
             # Extract 30 problems
             for item in aime_list[:30]:
