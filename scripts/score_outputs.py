@@ -89,9 +89,7 @@ VALID_CATS = {
 }
 
 JUDGE_MODELS = [
-    'meta-llama/llama-3.3-70b-instruct:free',
-    'openai/gpt-oss-120b:free',
-    'nvidia/nemotron-3-super-120b-a12b:free',
+    'anthropic/claude-haiku-4-5-20251001',
 ]
 
 
