@@ -50,7 +50,6 @@ def display_sample(dtype: str, outputs: dict, scores: dict, num_samples: int = 5
     for i, score_entry in enumerate(sampled, 1):
         problem_id = score_entry["problem_id"]
         category = score_entry["category"]
-        confidence = score_entry["confidence"]
         is_correct = score_entry["is_correct"]
 
         output = outputs[problem_id]
@@ -61,7 +60,7 @@ def display_sample(dtype: str, outputs: dict, scores: dict, num_samples: int = 5
         print(f"\n{'─'*80}")
         print(f"[Sample {i}/{sample_size}] Problem ID {problem_id}")
         print(f"Source: {output['source'].upper()}")
-        print(f"Predicted Category: {category} (confidence: {confidence:.1f})")
+        print(f"Predicted Category: {category}")
         print(f"Expected Answer: {expected_answer}")
         print(f"Correctly Answered: {'✓ YES' if is_correct else '✗ NO'}")
         print(f"{'─'*80}")
