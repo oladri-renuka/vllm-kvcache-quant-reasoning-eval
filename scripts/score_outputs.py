@@ -89,7 +89,7 @@ VALID_CATS = {
 }
 
 JUDGE_MODELS = [
-    'anthropic/claude-haiku-4-5-20251001',
+    'anthropic/claude-haiku-4.5',
 ]
 
 
