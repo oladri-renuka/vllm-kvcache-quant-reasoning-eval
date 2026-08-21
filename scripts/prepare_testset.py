@@ -164,6 +164,10 @@ def get_aime_problems():
         },
     ]
 
+    # Add source to all hardcoded AIME problems
+    for problem in hardcoded_aime:
+        problem["source"] = "aime"
+
     # Return first 30
     return hardcoded_aime[:30]
 
