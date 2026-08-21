@@ -1,76 +1,119 @@
 #!/usr/bin/env python3
 """
-Score outputs using the 6-category taxonomy for reasoning failures.
+Score outputs using the 6-category taxonomy from:
+"Silent Failures in Quantized LLM Reasoning" (Oladri et al., arXiv:2607.09999)
+
+Uses LLM-as-judge (OpenRouter API) or fallback to heuristics if API unavailable.
 
 Categories:
-1. No Failure: Correct answer + coherent reasoning
-2. Shortcut Collapse: Correct answer but reasoning is incomplete/skipped/vague
-3. Premise Hijacking: Accepts false assumption, reasons correctly from it
-4. Confidence Snowballing: Single early error propagates through solution
-5. Overcounting: Correct intermediate result, then continues unnecessarily
-6. Incoherent/Garbled: Output is unreadable or indicates crash
+1. NO_FAILURE: Correct answer with sound reasoning
+2. HOLLOW_CONVERGENCE: Correct answer but reasoning incomplete/skipped
+3. PREMISE_HIJACKING: False assumption, correct logic
+4. SHORTCUT_COLLAPSE: Bypassed steps, unjustified leaps
+5. OVERCOUNTING: Correct intermediate, continues unnecessarily
+6. CONFIDENCE_SNOWBALLING: Early error propagates through reasoning
 """
 
 import json
 import argparse
 import re
+import os
+import time
 from pathlib import Path
 from collections import defaultdict
 from typing import Dict, List, Tuple
 
+try:
+    import openai
+    HAS_OPENAI = True
+except ImportError:
+    HAS_OPENAI = False
+
+
+# ────────────────────────────────────────────────────────────────────────────
+# LLM-as-Judge Prompts (from Oladri et al. paper)
+# ────────────────────────────────────────────────────────────────────────────
+
+JUDGE_PROMPT_PASS1 = """
+### Role
+Expert Logic Auditor specializing in LLM Error Taxonomy.
+
+### Task
+Analyze the provided Reasoning Chain that led to a WRONG answer. Identify the exact moment the logic failed and classify the error into ONE category.
+
+### Error Taxonomy
+1. PREMISE_HIJACKING: The model accepted a false, paradoxical, or misleading assumption in the question and reasoned correctly from that flawed foundation. The logic is internally consistent but built on a wrong premise.
+2. SHORTCUT_COLLAPSE: The model bypassed necessary logical steps, made unjustified leaps of inference, or hallucinated a connection to reach the final answer without showing required intermediate work.
+3. OVERCOUNTING: The model correctly reached an intermediate milestone but continued reasoning past it, adding redundant or contradictory steps that invalidated its own correct progress.
+4. CONFIDENCE_SNOWBALLING: A single small error in an early reasoning step propagated silently through otherwise perfect subsequent reasoning, producing a coherent but incorrect final answer.
+
+### Inputs
+- Question: {question}
+- Ground Truth: {ground_truth}
+- Model Reasoning: {cot_chain}
+- Model Answer: {model_answer}
+
+### Output Constraint
+Return ONLY a valid JSON object. No markdown, no backticks, no explanation outside the JSON.
+{{"category": "ONE OF: PREMISE_HIJACKING, SHORTCUT_COLLAPSE, OVERCOUNTING, CONFIDENCE_SNOWBALLING", "justification": "One sentence identifying the specific point where the reasoning failed and why it fits the chosen category."}}
+"""
+
+JUDGE_PROMPT_PASS2 = """
+### Role
+Expert Logic Auditor.
+
+### Task
+The model reached the CORRECT final answer. Determine whether this represents genuine valid reasoning or hollow convergence.
+
+### Categories
+1. NO_FAILURE: The reasoning is robust. Every intermediate step is logically and mathematically derived from the previous one. All steps are visible and sound.
+2. HOLLOW_CONVERGENCE: The model arrived at the correct answer but through incomplete, skipped, or hollow reasoning steps. The answer is right but the reasoning chain would not hold up to scrutiny.
+
+### Inputs
+- Question: {question}
+- Ground Truth: {ground_truth}
+- Model Reasoning: {cot_chain}
+
+### Output Constraint
+Return ONLY a valid JSON object. No markdown, no backticks, no explanation outside the JSON.
+{{"category": "ONE OF: NO_FAILURE, HOLLOW_CONVERGENCE", "justification": "One sentence explaining whether the reasoning is genuinely valid or hollow."}}
+"""
+
+VALID_CATS = {
+    'PREMISE_HIJACKING',
+    'SHORTCUT_COLLAPSE',
+    'OVERCOUNTING',
+    'CONFIDENCE_SNOWBALLING',
+    'NO_FAILURE',
+    'HOLLOW_CONVERGENCE',
+}
+
+JUDGE_MODELS = [
+    'meta-llama/llama-3.3-70b-instruct:free',
+    'openai/gpt-oss-120b:free',
+    'nvidia/nemotron-3-super-120b-a12b:free',
+]
+
 
 def normalize_answer(answer_str: str) -> str:
     """Normalize answer for comparison."""
-    # Remove extra whitespace
     answer = answer_str.strip().lower()
-    # Try to extract numbers/fractions
     answer = re.sub(r'\s+', ' ', answer)
     return answer
 
 
-def extract_final_number(text: str) -> List[str]:
-    """Extract candidate final answers from text."""
-    # Look for patterns like "answer is X", "final answer: X", "=", etc.
-    candidates = []
-
-    # Pattern: "answer is ... "
-    matches = re.findall(r'answer[:\s]+([0-9./\-\w]+)', text, re.IGNORECASE)
-    candidates.extend(matches)
-
-    # Pattern: "final answer"
-    matches = re.findall(r'final[:\s]+([0-9./\-\w]+)', text, re.IGNORECASE)
-    candidates.extend(matches)
-
-    # Pattern: "= X" (end of line)
-    matches = re.findall(r'=\s*([0-9./\-\w]+)(?:\n|$)', text, re.IGNORECASE)
-    candidates.extend(matches)
-
-    # Pattern: numbers followed by period at end
-    matches = re.findall(r'([0-9./\-\w]+)\s*\.?\s*$', text.strip())
-    candidates.extend(matches)
-
-    return list(set(candidates))
-
-
 def check_answer_correctness(generated_text: str, expected_answer: str) -> bool:
-    """
-    Check if the generated output contains the expected answer.
-    This is a heuristic check; implement more sophisticated matching as needed.
-    """
-    # Normalize both
+    """Check if the generated output contains the expected answer."""
     expected_norm = normalize_answer(expected_answer)
     generated_norm = normalize_answer(generated_text)
 
-    # Direct substring match
     if expected_norm in generated_norm:
         return True
 
-    # Extract numbers and compare
     expected_nums = re.findall(r'[\d.]+', expected_norm)
     generated_nums = re.findall(r'[\d.]+', generated_norm)
 
     if expected_nums and generated_nums:
-        # Check if any match
         for exp in expected_nums:
             if exp in generated_nums:
                 return True
@@ -78,182 +121,198 @@ def check_answer_correctness(generated_text: str, expected_answer: str) -> bool:
     return False
 
 
-def detect_shortcut_collapse(text: str) -> bool:
+# ────────────────────────────────────────────────────────────────────────────
+# LLM-as-Judge Classification
+# ────────────────────────────────────────────────────────────────────────────
+
+def classify_with_llm_judge(
+    question: str,
+    ground_truth: str,
+    cot_chain: str,
+    model_answer: str,
+    is_correct: bool,
+) -> Tuple[str, str]:
     """
-    Detect Shortcut Collapse: correct answer but reasoning is vague/incomplete.
-    Heuristic: Very short output or missing step-by-step explanation.
+    Classify output using LLM-as-judge (OpenRouter API).
+    Returns: (category, justification)
     """
-    # If text is very short, likely a shortcut
-    if len(text) < 100:
-        return True
+    if not HAS_OPENAI:
+        print("  [WARN] openai not installed, falling back to heuristics")
+        return None, ""
 
-    # Check for absence of reasoning markers
-    reasoning_indicators = [
-        r'let\s+(?:me\s+)?(?:think|work|solve)',
-        r'step\s+\d+',
-        r'therefore',
-        r'so\s+(?:we\s+)?(?:have|get)',
-        r'this\s+(?:means|gives|implies)',
-        r'notice\s+that',
-        r'(?:by|using)\s+(?:the|a)',
-    ]
+    openrouter_key = os.getenv('OPENROUTER_KEY')
+    if not openrouter_key:
+        print("  [WARN] OPENROUTER_KEY not set, falling back to heuristics")
+        return None, ""
 
-    found_reasoning = any(re.search(pattern, text, re.IGNORECASE) for pattern in reasoning_indicators)
+    client = openai.OpenAI(
+        api_key=openrouter_key,
+        base_url='https://openrouter.ai/api/v1'
+    )
 
-    # If no reasoning found, likely shortcut collapse
-    return not found_reasoning
+    if is_correct:
+        prompt = JUDGE_PROMPT_PASS2.format(
+            question=question,
+            ground_truth=ground_truth,
+            cot_chain=cot_chain[:3000],
+        )
+    else:
+        prompt = JUDGE_PROMPT_PASS1.format(
+            question=question,
+            ground_truth=ground_truth,
+            cot_chain=cot_chain[:3000],
+            model_answer=model_answer,
+        )
+
+    for model in JUDGE_MODELS:
+        for attempt in range(3):
+            try:
+                resp = client.chat.completions.create(
+                    model=model,
+                    temperature=0.0,
+                    max_tokens=200,
+                    messages=[{'role': 'user', 'content': prompt}],
+                    extra_headers={
+                        'HTTP-Referer': 'https://umd.edu',
+                        'X-Title': 'vLLM KV-Cache Safety Research'
+                    }
+                )
+                raw = resp.choices[0].message.content.strip()
+                if '```' in raw:
+                    parts = raw.split('```')
+                    for part in parts:
+                        part = part.lstrip('json').strip()
+                        if part.startswith('{'):
+                            raw = part
+                            break
+                json_match = re.search(r'\{.*\}', raw, re.DOTALL)
+                if not json_match:
+                    time.sleep(2)
+                    continue
+                data = json.loads(json_match.group())
+                c = data.get('category', 'UNKNOWN').upper().strip()
+                cat = c if c in VALID_CATS else 'UNKNOWN'
+                just = data.get('justification', '')
+                if cat != 'UNKNOWN':
+                    return cat, just
+            except (json.JSONDecodeError, Exception) as e:
+                time.sleep(2)
+        print(f'  [FALLBACK] {model} failed, trying next...')
+
+    return None, ""
 
 
-def detect_premise_hijacking(text: str, question: str) -> bool:
+# ────────────────────────────────────────────────────────────────────────────
+# Fallback Heuristic Classification (if API unavailable)
+# ────────────────────────────────────────────────────────────────────────────
+
+def classify_with_heuristics(
+    generated_text: str,
+    expected_answer: str,
+    question: str,
+    is_correct: bool,
+) -> Tuple[str, str]:
     """
-    Detect Premise Hijacking: model accepts a false assumption and reasons correctly from it.
-    Heuristic: Look for contradictions with the problem statement.
+    Fallback heuristic classification when LLM-as-judge is unavailable.
     """
-    # This is hard to detect without semantic understanding.
-    # For now, check for explicit contradictions or assumptions not in the question.
-    hijacking_patterns = [
-        r'(?:assume|let|suppose)\s+(?:the\s+)?(?:answer|result)\s+is',  # Circular reasoning
-        r'assume\s+(?:the|a)\s+(?:different|wrong|false)',
-    ]
+    if not generated_text:
+        return "UNKNOWN", ""
 
-    found = any(re.search(pattern, text, re.IGNORECASE) for pattern in hijacking_patterns)
-    return found
+    # Check answer correctness
+    if not is_correct:
+        if len(generated_text) > 200 and any(word in generated_text.lower()
+                                            for word in ['assume', 'suppose', 'let']):
+            return "PREMISE_HIJACKING", "Possible flawed assumption"
+        elif len(re.findall(r'[\+\-\*/]', generated_text)) > 10:
+            return "CONFIDENCE_SNOWBALLING", "Multiple calculations with possible error cascade"
+        elif len(re.findall(r'answer', generated_text, re.IGNORECASE)) > 1:
+            return "OVERCOUNTING", "Multiple answers detected"
+        else:
+            return "CONFIDENCE_SNOWBALLING", "Wrong answer with unclear failure mode"
 
-
-def detect_confidence_snowballing(text: str) -> bool:
-    """
-    Detect Confidence Snowballing: single early error propagates.
-    Heuristic: Look for calculations that seem to follow logically but start from wrong premise.
-    """
-    # This is very hard to detect without actually executing the math.
-    # Heuristic: if many calculations but final answer seems wrong relative to problem scale
-    calc_count = len(re.findall(r'[\+\-\*/]', text))
-    line_count = len(text.split('\n'))
-
-    # Many calculations spread over few lines might indicate cascading errors
-    if calc_count > 10 and line_count < 5:
-        return True
-
-    return False
-
-
-def detect_overcounting(text: str, question: str) -> bool:
-    """
-    Detect Overcounting: correct intermediate result, then continues unnecessarily.
-    Heuristic: Look for multiple answers or "but then" continuations.
-    """
-    # Check for patterns like "the answer is X, but" or multiple final answers
-    multiple_answers = len(re.findall(r'(?:the\s+)?answer\s+is', text, re.IGNORECASE)) > 1
-    unnecessary_continuation = bool(re.search(r'(?:but|however|yet)\s+(?:if|then)', text, re.IGNORECASE))
-
-    return multiple_answers or unnecessary_continuation
-
-
-def detect_incoherent(text: str) -> bool:
-    """
-    Detect Incoherent/Garbled: output is unreadable or indicates crash.
-    Heuristic: incomplete sentences, strange Unicode, repeated characters, etc.
-    """
-    if not text or len(text) < 10:
-        return True
-
-    # Check for excessive repeated characters
-    repeated = re.findall(r'(.)\1{5,}', text)
-    if repeated:
-        return True
-
-    # Check for incomplete sentences (many lines ending with "the" or "and")
-    lines = text.split('\n')
-    incomplete_endings = sum(1 for line in lines if line.rstrip().endswith(('and', 'the', 'or', 'is')))
-    if incomplete_endings > len(lines) * 0.5:
-        return True
-
-    # Check for very few words
-    word_count = len(text.split())
-    if word_count < 5:
-        return True
-
-    return False
+    # Answer is correct
+    if len(generated_text) < 100:
+        return "HOLLOW_CONVERGENCE", "Very short output, likely incomplete reasoning"
+    elif not any(re.search(pattern, generated_text, re.IGNORECASE)
+                for pattern in [r'step', r'therefore', r'so', r'this means']):
+        return "HOLLOW_CONVERGENCE", "No reasoning markers found"
+    else:
+        return "NO_FAILURE", "Sound reasoning detected"
 
 
 def classify_output(
     generated_text: str,
     expected_answer: str,
     question: str,
-) -> Tuple[str, float]:
+    ground_truth: str = None,
+    model_answer: str = None,
+) -> Tuple[str, str]:
     """
-    Classify output into one of 6 categories.
-    Returns: (category, confidence_score)
+    Classify output using LLM-as-judge, fallback to heuristics.
+    Returns: (category, explanation)
     """
-
-    # Handle errors/empty outputs
+    # Handle empty/error outputs
     if not generated_text or "error" in generated_text.lower():
-        return "INCOHERENT", 1.0
+        return "UNKNOWN", "Empty or error output"
 
-    # Check for incoherence first (highest priority)
-    if detect_incoherent(generated_text):
-        return "INCOHERENT", 1.0
-
-    # Check answer correctness
     is_correct = check_answer_correctness(generated_text, expected_answer)
 
-    if not is_correct:
-        # Wrong answer - could be Premise Hijacking, Confidence Snowballing, or Overcounting
-        if detect_premise_hijacking(generated_text, question):
-            return "PREMISE_HIJACKING", 0.7
-        elif detect_confidence_snowballing(generated_text):
-            return "CONFIDENCE_SNOWBALLING", 0.7
-        elif detect_overcounting(generated_text, question):
-            return "OVERCOUNTING", 0.7
-        else:
-            # Wrong answer but no specific pattern
-            return "CONFIDENCE_SNOWBALLING", 0.5
+    # Try LLM-as-judge first
+    if HAS_OPENAI and ground_truth and model_answer is not None:
+        cat, expl = classify_with_llm_judge(question, ground_truth, generated_text, model_answer, is_correct)
+        if cat and cat in VALID_CATS:
+            return cat, expl
 
-    # Answer is correct
-    if detect_shortcut_collapse(generated_text):
-        return "SHORTCUT_COLLAPSE", 0.7
-    else:
-        return "NO_FAILURE", 0.9
+    # Fallback to heuristics
+    return classify_with_heuristics(generated_text, expected_answer, question, is_correct)
 
 
 def score_results(results_file: str) -> Dict:
-    """
-    Score all results in a results JSONL file.
-    """
+    """Score all results in a results JSONL file using LLM-as-judge or heuristics."""
     scores_by_category = defaultdict(int)
     scores_by_source = defaultdict(lambda: defaultdict(int))
     all_scores = []
 
     with open(results_file, 'r') as f:
-        for line_num, line in enumerate(f):
-            if not line.strip():
-                continue
+        lines = [l for l in f if l.strip()]
+        total_lines = len(lines)
 
+        for idx, line in enumerate(lines):
             try:
                 result = json.loads(line)
             except json.JSONDecodeError as e:
-                print(f"Warning: Could not parse line {line_num}: {e}")
+                print(f"  [PARSE ERROR] Line {idx}: {e}")
                 continue
 
             generated_text = result.get("generated_text", "")
             expected_answer = result.get("expected_answer", "")
             question = result.get("question", "")
             source = result.get("source", "unknown")
+            problem_id = result.get("problem_id", idx)
 
             # Classify
-            category, confidence = classify_output(generated_text, expected_answer, question)
+            category, explanation = classify_output(
+                generated_text, expected_answer, question,
+                ground_truth=expected_answer,
+                model_answer=generated_text,
+            )
+
+            is_correct = check_answer_correctness(generated_text, expected_answer)
 
             # Record
             scores_by_category[category] += 1
             scores_by_source[source][category] += 1
 
             all_scores.append({
-                "problem_id": result.get("problem_id"),
+                "problem_id": problem_id,
                 "source": source,
                 "category": category,
-                "confidence": confidence,
-                "is_correct": check_answer_correctness(generated_text, expected_answer),
+                "explanation": explanation,
+                "is_correct": is_correct,
             })
+
+            if (idx + 1) % 10 == 0 or (idx + 1) == total_lines:
+                print(f"    {idx+1}/{total_lines} scored | last: {category}")
 
     return {
         "total_problems": len(all_scores),
@@ -264,15 +323,13 @@ def score_results(results_file: str) -> Dict:
 
 
 def generate_report(results_dir: str) -> Dict:
-    """
-    Score all three runs (auto, fp8, int8_per_token_head) and generate comparison.
-    """
+    """Score all three runs and generate comparison using Oladri et al. taxonomy."""
     dtypes = ["auto", "fp8", "int8_per_token_head"]
     all_results = {}
 
-    print("\n" + "="*70)
-    print("SCORING RESULTS")
-    print("="*70 + "\n")
+    print("\n" + "="*80)
+    print("SCORING RESULTS (Oladri et al. taxonomy via LLM-as-judge)")
+    print("="*80 + "\n")
 
     for dtype in dtypes:
         results_file = Path(results_dir) / dtype / "outputs.jsonl"
@@ -284,32 +341,42 @@ def generate_report(results_dir: str) -> Dict:
         scores = score_results(str(results_file))
         all_results[dtype] = scores
 
-        # Save scores
         scores_file = results_file.parent / "scores.json"
         with open(scores_file, 'w') as f:
             json.dump(scores, f, indent=2)
-        print(f"  ✓ Scores saved to {scores_file}\n")
+        print(f"  ✓ Saved to {scores_file}\n")
 
-    # Generate comparison table
-    print("\n" + "="*70)
-    print("COMPARISON TABLE")
-    print("="*70 + "\n")
+    print("\n" + "="*80)
+    print("RESULTS TABLE")
+    print("="*80 + "\n")
 
-    # Overall accuracy (no failure)
-    print("Overall Correctness (No Failure category):")
-    print("-" * 50)
+    # Pass rate (NO_FAILURE + HOLLOW_CONVERGENCE = correct answers)
+    print("Correct Answer Rate:")
+    print("-" * 60)
     for dtype in dtypes:
         if dtype not in all_results:
             continue
         total = all_results[dtype]["total_problems"]
-        no_failure = all_results[dtype]["by_category"].get("NO_FAILURE", 0)
-        accuracy = (no_failure / total * 100) if total > 0 else 0
-        print(f"  {dtype:25s}: {no_failure:3d}/{total:3d} ({accuracy:5.1f}%)")
+        correct = sum(s["is_correct"] for s in all_results[dtype]["all_scores"])
+        rate = (correct / total * 100) if total > 0 else 0
+        print(f"  {dtype:25s}: {correct:3d}/{total:3d} ({rate:5.1f}%)")
 
-    # Breakdown by category
-    print("\n\nFailure Mode Breakdown:")
-    print("-" * 70)
-    categories = ["NO_FAILURE", "SHORTCUT_COLLAPSE", "PREMISE_HIJACKING", "CONFIDENCE_SNOWBALLING", "OVERCOUNTING", "INCOHERENT"]
+    # Hollow Convergence (the key metric from the paper!)
+    print("\n\nHollow Convergence Rate (Correct Answer, Incomplete Reasoning):")
+    print("-" * 60)
+    for dtype in dtypes:
+        if dtype not in all_results:
+            continue
+        total = all_results[dtype]["total_problems"]
+        hc = all_results[dtype]["by_category"].get("HOLLOW_CONVERGENCE", 0)
+        rate = (hc / total * 100) if total > 0 else 0
+        print(f"  {dtype:25s}: {hc:3d}/{total:3d} ({rate:5.1f}%)")
+
+    # Full breakdown
+    print("\n\nFull Failure Mode Breakdown:")
+    print("-" * 80)
+    categories = ["NO_FAILURE", "HOLLOW_CONVERGENCE", "PREMISE_HIJACKING",
+                  "SHORTCUT_COLLAPSE", "OVERCOUNTING", "CONFIDENCE_SNOWBALLING", "UNKNOWN"]
 
     for dtype in dtypes:
         if dtype not in all_results:
@@ -319,11 +386,11 @@ def generate_report(results_dir: str) -> Dict:
         for cat in categories:
             count = all_results[dtype]["by_category"].get(cat, 0)
             pct = (count / total * 100) if total > 0 else 0
-            print(f"  {cat:25s}: {count:3d}/{total:3d} ({pct:5.1f}%)")
+            print(f"  {cat:30s}: {count:3d}/{total:3d} ({pct:5.1f}%)")
 
-    # Breakdown by source (AIME vs GSM8K)
-    print("\n\nResults by Problem Source:")
-    print("-" * 70)
+    # By source
+    print("\n\nResults by Problem Source (AIME vs GSM8K):")
+    print("-" * 80)
 
     for source in ["aime", "gsm8k"]:
         print(f"\n{source.upper()}:")
@@ -331,12 +398,14 @@ def generate_report(results_dir: str) -> Dict:
             if dtype not in all_results or source not in all_results[dtype]["by_source"]:
                 continue
             source_results = all_results[dtype]["by_source"].get(source, {})
-            no_failure = source_results.get("NO_FAILURE", 0)
             total_source = sum(source_results.values())
-            accuracy = (no_failure / total_source * 100) if total_source > 0 else 0
-            print(f"  {dtype:25s}: {no_failure:3d}/{total_source:3d} ({accuracy:5.1f}%)")
+            correct_src = sum(1 for s in all_results[dtype]["all_scores"]
+                            if s["source"] == source and s["is_correct"])
+            accuracy = (correct_src / total_source * 100) if total_source > 0 else 0
+            hc_src = source_results.get("HOLLOW_CONVERGENCE", 0)
+            print(f"  {dtype:25s}: {correct_src:3d}/{total_source:3d} ({accuracy:5.1f}%) | HC: {hc_src:3d}")
 
-    print("\n" + "="*70)
+    print("\n" + "="*80)
 
     return all_results
 
