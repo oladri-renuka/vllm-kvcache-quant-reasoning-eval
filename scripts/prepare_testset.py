@@ -212,6 +212,9 @@ def get_gsm8k_problems():
             {"question": "If you work for 8 hours at $15 per hour, how much do you earn?", "answer": "120"},
             {"question": "A train travels at 80 km/h. In 2.5 hours, how far does it travel?", "answer": "200"},
         ]
+        # Add source to all hardcoded GSM8K problems
+        for problem in hardcoded_gsm8k:
+            problem["source"] = "gsm8k"
         return hardcoded_gsm8k[:70]
 
 
