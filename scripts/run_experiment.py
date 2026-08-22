@@ -95,8 +95,13 @@ def run_experiment(
             "tensor_parallel_size": 1,
             "gpu_memory_utilization": 0.9,
             "trust_remote_code": True,
-            "attention_backend": "FLASHINFER",  # Avoid Triton bug #49716
         }
+
+        # Select attention backend based on KV-cache dtype
+        if kv_cache_dtype == "int8_per_token_head":
+            llm_kwargs["attention_backend"] = "FLASH_ATTN"  # int8_per_token_head requires FLASH_ATTN
+        else:
+            llm_kwargs["attention_backend"] = "FLASHINFER"  # Avoid Triton bug #49716 for other dtypes
 
         # Enable automatic KV-cache scale calibration for FP8
         if kv_cache_dtype == "fp8":
