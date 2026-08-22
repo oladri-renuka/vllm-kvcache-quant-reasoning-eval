@@ -1,144 +1,18 @@
-# vLLM KV-Cache Quantization Safety Experiment
+# FP8 vs int8_per_token_head KV-Cache Quantization: Reasoning-Quality Evaluation
 
-**Testing whether `int8_per_token_head` KV-cache quantization causes silent reasoning failures (Shortcut Collapse) in vLLM.**
+**Author:** Renuka Oladri  
+**Date:** August 2026  
+**Model:** Qwen2.5-7B-Instruct  
+**Backend:** vLLM (FlashInfer attention backend)
 
-This is a **real, reproducible experiment** with:
-- ✅ Actual vLLM inference (no mocks)
-- ✅ Real test data (100 math problems: 30 AIME + 70 GSM8K)
-- ✅ Three genuine configurations (baseline, FP8, int8_per_token_head)
-- ✅ Automated failure classification (6-category taxonomy)
-- ✅ Manual sanity checks
+## Context
 
-**Ref:** vLLM Issue #33480
+This repo answers an open question from [vllm-project/vllm#33480](https://github.com/vllm-project/vllm/issues/33480#issue-comment): does `int8_per_token_head` KV-cache quantization behave like FP8, and does either introduce *silent* reasoning-quality degradation — not just accuracy loss, but a change in *how* the model fails?
 
----
-
-## Quick Start
-
-### 1. Setup (one time)
-```bash
-make setup
-```
-This installs vLLM from source + Python dependencies.
-
-### 2. Prepare Test Data
-```bash
-make prepare
-```
-Downloads 30 real AIME 2025 + 70 real GSM8K problems.
-
-### 3. Run Experiments (takes 2-4 hours on A100)
-```bash
-make run-all
-```
-Or individual runs:
-```bash
-make run-baseline   # auto (reference)
-make run-fp8        # FP8 quantization
-make run-int8       # int8_per_token_head (target)
-```
-
-### 4. Score Results
-```bash
-make score
-```
-Applies the 6-category taxonomy to all outputs.
-
-### 5. Manual Review
-```bash
-make sanity-check
-```
-Spot-checks 5 random outputs per dtype for verification.
-
-### 6. Generate Report
-```bash
-make report
-```
-Shows comparison table and summary.
-
----
-
-## For Testing with Fewer Problems
-
-Run a quick test with, e.g., 5 problems per dtype:
-
-```bash
-make run-baseline NUM_PROBLEMS=5
-make run-fp8 NUM_PROBLEMS=5
-make run-int8 NUM_PROBLEMS=5
-make score
-```
-
-**Note:** With only 5 problems, results won't be statistically meaningful, but you can verify the pipeline works.
-
----
-
-## Directory Structure
-
-```
-vllm_kvcache_experiment/
-├── scripts/
-│   ├── setup.sh                 # Install dependencies
-│   ├── prepare_testset.py        # Download & prepare test data
-│   ├── run_experiment.py         # Run vLLM inference
-│   ├── score_outputs.py          # Apply taxonomy classification
-│   └── sanity_check.py           # Manual review samples
-├── results/
-│   ├── auto/
-│   │   ├── outputs.jsonl         # Full outputs from baseline run
-│   │   └── scores.json           # Classification scores
-│   ├── fp8/
-│   │   ├── outputs.jsonl
-│   │   └── scores.json
-│   └── int8_per_token_head/
-│       ├── outputs.jsonl
-│       └── scores.json
-├── Makefile                      # Convenience targets
-├── requirements.txt              # Python dependencies
-├── report.md                     # Results summary
-└── README.md                     # This file
-```
-
----
-
-## Test Set Format
-
-Test data is generated at runtime by `prepare_testset.py` into `data/testset.jsonl`. Each line is a JSON object:
-```json
-{
-  "question": "...",
-  "answer": "...",
-  "source": "aime" or "gsm8k"
-}
-```
-
----
-
-## Output Format
-
-`results/{dtype}/outputs.jsonl`: Each line contains:
-```json
-{
-  "problem_id": 1,
-  "source": "aime",
-  "question": "...",
-  "expected_answer": "...",
-  "generated_text": "...",
-  "token_count": 150,
-  "latency_seconds": 2.5,
-  "memory_used_gb": 0.3,
-  "timestamp": "2025-08-21T12:34:56.789012"
-}
-```
-
----
-
-## Scoring Taxonomy
-
-Outputs are classified into six failure modes:
+The taxonomy used to classify failures is from our prior work, [Silent Failures in Quantized LLM Reasoning](https://arxiv.org/abs/2607.09999) (Oladri et al., ICTAI 2026, submitted), which found that NF4 **weight** quantization increases Shortcut Collapse from 44% to 78% of wrong-answer failures, even when raw accuracy looks nearly unaffected. This experiment asks whether a similar silent pattern shows up under **KV-cache** quantization instead.
 
 | Category | Description |
-|----------|-------------|
+|---|---|
 | **No Failure** | Correct reasoning + correct answer |
 | **Hollow Convergence** | Correct answer, but reasoning is incomplete/skipped/vague |
 | **Shortcut Collapse** | Incorrect answer due to unjustified logical leaps |
@@ -146,124 +20,87 @@ Outputs are classified into six failure modes:
 | **Confidence Snowballing** | A single early error propagates through the solution |
 | **Overcounting** | Correct intermediate answer, then continues unnecessarily |
 
-**Scoring Logic:** `score_outputs.py` implements LLM-as-judge classification. See the code for detailed prompts.
+## Setup
 
----
+- **Dataset:** 100 problems — AIME 2025 (30, hard) + GSM8K subset (70, easier)
+- **Conditions tested:**
 
-## Configuration Details
+| Condition | `kv_cache_dtype` | Calibration |
+|---|---|---|
+| `auto` | none (baseline) | n/a |
+| `int8_per_token_head` | int8 per-token-per-head | dynamic (default for this dtype) |
+| `fp8` (calibrated) | fp8 | `calculate_kv_scales=True` |
 
-### Model
-Default: `Qwen/Qwen2.5-7B-Instruct` (smaller, fits on most GPUs)  
-Alternative: `meta-llama/Llama-3.1-8B-Instruct` (change in `run_experiment.py` or pass `--model`)
+- **Backend:** FlashInfer (avoids known Triton-backend corruption bug, [vllm#49716](https://github.com/vllm-project/vllm/issues/49716))
+- **Model:** Qwen2.5-7B-Instruct (dense attention, avoids known hybrid-attention bug, [vllm#40388](https://github.com/vllm-project/vllm/issues/40388))
+- **Scoring:** LLM-as-judge using the 6-category taxonomy above, applied to full reasoning traces (not just final answers)
 
-### Inference Settings
-- Temperature: 0.7 (some randomness for interesting outputs)
-- Top-p: 0.95
-- Max tokens: 1024 (allow full reasoning chains)
-- Seed: 42 (reproducible across runs)
-- Attention backend: FLASHINFER (avoids Triton bug #49716)
+## Results
 
-### Important Notes
-- Use **FLASHINFER** backend to avoid Triton quantization bug
-- Choose a non-hybrid architecture to avoid Gemma bug
-- KV-cache quantization only affects inference, not training
-- Results are reproducible if you use the same seed and model
+### Correct Answer Rate
 
----
+| Condition | Overall | AIME (n=30) | GSM8K (n=70) |
+|---|---|---|---|
+| `auto` (baseline) | 73% | 10.0% | 100.0% |
+| `fp8` (calibrated) | 3% | 0.0% | 4.3% |
+| `int8_per_token_head` | 73% | 10.0% | 100.0% |
 
-## Running on GPU Instances
+### Failure Mode Breakdown
 
-This experiment is designed to run on RunPod or similar cloud GPU instances:
+| Condition | No Failure | Hollow Convergence | Shortcut Collapse | Premise Hijacking | Other |
+|---|---|---|---|---|---|
+| `auto` | 65% | 8% | 11% | 15% | 1% |
+| `fp8` (calibrated) | 0% | 3% | **94%†** | 0% | 3% |
+| `int8_per_token_head` | 64% | 9% | 15% | 10% | 2% |
+
+†Judge-labeled as Shortcut Collapse, but on manual review this is almost entirely **generation collapse** (gibberish/repetition), not genuine reasoning failure — see note below.
+
+### A note on the FP8 numbers: taxonomy mismatch, not a 4th reasoning-failure category
+
+Our automated judge initially labeled the vast majority of `fp8` failures as `SHORTCUT_COLLAPSE`. On manual review of the raw transcripts (25-sample spot check, consistent with the full 100), this label is **not accurate**. Our taxonomy was built to capture *fluent-but-wrong* reasoning — output that looks like real reasoning but quietly lands on a flawed shortcut. What we actually observe under calibrated FP8 is different in kind: long runs of a single repeated token (e.g. hundreds of consecutive `0` characters), or fragmented word-salad with no coherent structure (e.g. `"EXPLAINETTEETTEEXPLAINEXMATH..."`). No reasoning is being attempted at all.
+
+We call this **generation collapse** here as a descriptive label, not a validated 7th taxonomy category — our original six categories were validated against 30,000 human-annotated examples (Cohen's κ = 0.906); this label has not gone through that process and we're not claiming it should be treated with the same rigor. It's a placeholder name for a phenomenon that is clearly distinct from anything in the existing taxonomy, and formalizing it would need its own validation pass.
+
+**Representative raw outputs** (verbatim, truncated):
+```
+[fp8, GSM8K, Problem 32]
+ - years a thought to make a class  the, to make to make to make
+00000000000000000000000000000000000000000000000000000000000000...
+
+[fp8, AIME, Problem 14]
+EXPLAINETTEETTEEXPLAINEXMATHENEXEVTENEXPLAINEXEKTEXPLAINEXMEXPONEXECON...
+
+[fp8, AIME, Problem 18]
+00000000000000000000000000000000000000000000000000000000000000...
+```
+
+## Interpretation
+
+**`int8_per_token_head` closely tracks the unquantized baseline** on both accuracy (73% vs 73%) and failure-mode distribution, on both the easy (GSM8K) and hard (AIME) subsets. We did not find evidence of the silent reasoning-degradation pattern for this quantization mode on this model.
+
+**Calibrated FP8 (`calculate_kv_scales=True`) produces near-total generation collapse (94/100)** — not subtle reasoning-quality degradation, but a breakdown in coherent generation itself. This is notable because it runs counter to the general expectation, stated in vLLM's own documentation, that calibration improves FP8 KV-cache fidelity relative to the uncalibrated default (`scale=1.0`). We do not yet know whether uncalibrated FP8 on this same corrected dataset would be better, worse, or similar — see Limitations.
+
+## Limitations
+
+- **No matched uncalibrated-FP8 result on this corrected dataset.** Our initial uncalibrated FP8 run (`scale=1.0` default) was conducted on an earlier, flawed AIME subset and is not directly comparable to the numbers above. We do not have GPU access to re-run this condition on the corrected dataset at this time. This leaves an open question we'd genuinely like help closing: **is calibration itself making things worse here, or is uncalibrated FP8 equally broken on the corrected set?** We'd welcome a reproduction from anyone with spare compute.
+- **Single model, single seed.** Results are from Qwen2.5-7B-Instruct only, one run per condition. We have not tested other model sizes/families or repeated runs to check variance.
+- **LLM-as-judge scoring**, not full human annotation (our original paper used human labeling with Cohen's kappa = 0.906; this experiment uses judge-only scoring for speed, which is a weaker evidentiary standard). Concretely, the judge mislabeled the FP8 generation-collapse outputs as `SHORTCUT_COLLAPSE` in most cases — see note above. We manually corrected this in our reporting, but the raw `scores.json` files still contain the original (incorrect) judge labels for `fp8`.
+
+## Reproducing this
 
 ```bash
-# On a RunPod A100 instance:
-git clone <this-repo>
-cd vllm_kvcache_experiment
-make setup
-make prepare
-make run-all          # ~3-4 hours
-make score
-make sanity-check
-# Fill in report.md with results
+pip install -r requirements.txt
+python scripts/run_experiment.py --kv_cache_dtype auto
+python scripts/run_experiment.py --kv_cache_dtype fp8
+python scripts/run_experiment.py --kv_cache_dtype int8_per_token_head
+python scripts/score_outputs.py
 ```
 
----
+Raw outputs and scores for all three conditions are in `results/`.
 
-## Interpreting Results
+## Related vLLM issues referenced
 
-### Primary Question
-**Does `int8_per_token_head` cause Shortcut Collapse more than baseline or FP8?**
-
-Expected interpretations:
-- **✓ Good:** Accuracy matches baseline (within statistical noise), Shortcut Collapse rate is similar
-- **⚠ Concerning:** Accuracy degrades OR Shortcut Collapse rate is significantly elevated
-- **🚨 Red Flag:** Accuracy drops >5% OR Shortcut Collapse becomes dominant failure mode
-
-### Sanity Checks
-1. **Manual review:** Look at 5-10 outputs per dtype. Do the predicted categories match reality?
-2. **Spot-check correctness:** Pick 2-3 correct outputs and 2-3 incorrect outputs. Does the reasoning match the category?
-3. **Compare with baseline:** Are baseline (auto) results reasonable? (Typically 60-80% correct on this mixed test set)
-
----
-
-## Troubleshooting
-
-### Out of Memory
-- Reduce `gpu_memory_utilization` in `run_experiment.py` (default 0.9)
-- Use a smaller model (e.g., Qwen2.5-3B instead of 7B)
-- Reduce `max_tokens` in `SamplingParams`
-
-### vLLM Installation Fails
-Make sure you have CUDA 11.8+ and that PyTorch installed correctly:
-```bash
-python -c "import torch; print(torch.cuda.is_available())"
-```
-
-### Scores not generated
-Make sure `results/{dtype}/outputs.jsonl` exists and has content:
-```bash
-wc -l results/auto/outputs.jsonl
-head results/auto/outputs.jsonl
-```
-
-### Model download fails
-HuggingFace token may be required:
-```bash
-huggingface-cli login
-```
-
----
-
-## Contributing Back to vLLM
-
-Once results are ready:
-
-1. Fill in `report.md` with your findings
-2. Post the results to [vLLM Issue #33480](https://github.com/vllm-project/vllm/issues/33480)
-3. Include:
-   - Accuracy table (auto vs fp8 vs int8_per_token_head)
-   - Shortcut Collapse rates
-   - Your GPU model and CUDA version
-   - Any interesting failure examples
-
----
-
-## Citation
-
-If you use this experiment framework, please cite:
-
-```bibtex
-@software{vllm_kvcache_experiment,
-  title = {vLLM KV-Cache Quantization Safety Experiment},
-  year = {2025},
-  note = {GitHub: Open VLM / vLLM Issue \#33480}
-}
-```
-
----
-
-## Questions?
-
-- See `report.md` for detailed results template
-- Check `scripts/` for implementation details
-- Review logs in `results/{dtype}/` for diagnostics
+- [#33480](https://github.com/vllm-project/vllm/issues/33480) — original feature request this experiment answers
+- [#42179](https://github.com/vllm-project/vllm/issues/42179) — FP8 KV-cache corruption on Qwen3.5-397B disaggregated serving
+- [#41343](https://github.com/vllm-project/vllm/issues/41343) — FP8 KV-cache corruption on Qwen-VL models with default scaling
+- [#40388](https://github.com/vllm-project/vllm/issues/40388), [#49716](https://github.com/vllm-project/vllm/issues/49716) — known bugs this experiment's config was chosen to avoid
