@@ -99,7 +99,8 @@ def run_experiment(
 
         # Select attention backend based on KV-cache dtype
         if kv_cache_dtype == "int8_per_token_head":
-            llm_kwargs["attention_backend"] = "FLASH_ATTN"  # int8_per_token_head requires FLASH_ATTN
+            # Let vLLM auto-select backend for int8_per_token_head (don't force FLASH_ATTN)
+            pass
         else:
             llm_kwargs["attention_backend"] = "FLASHINFER"  # Avoid Triton bug #49716 for other dtypes
 
