@@ -1,10 +1,5 @@
 # FP8 vs int8_per_token_head KV-Cache Quantization: Reasoning-Quality Evaluation
 
-**Author:** Renuka Oladri  
-**Date:** August 2026  
-**Model:** Qwen2.5-7B-Instruct  
-**Backend:** vLLM (FlashInfer attention backend)
-
 ## Context
 
 This repo answers an open question from [vllm-project/vllm#33480](https://github.com/vllm-project/vllm/issues/33480#issue-comment): does `int8_per_token_head` KV-cache quantization behave like FP8, and does either introduce *silent* reasoning-quality degradation — not just accuracy loss, but a change in *how* the model fails?
