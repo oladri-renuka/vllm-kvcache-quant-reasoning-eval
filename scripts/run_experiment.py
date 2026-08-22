@@ -88,14 +88,22 @@ def run_experiment(
     print("(This may take a few minutes to load the model...)")
 
     try:
-        llm = LLM(
-            model=model_name,
-            kv_cache_dtype=kv_cache_dtype,
-            tensor_parallel_size=1,
-            gpu_memory_utilization=0.9,
-            trust_remote_code=True,
-            attention_backend="FLASHINFER",  # Avoid Triton bug #49716
-        )
+        # Build LLM kwargs
+        llm_kwargs = {
+            "model": model_name,
+            "kv_cache_dtype": kv_cache_dtype,
+            "tensor_parallel_size": 1,
+            "gpu_memory_utilization": 0.9,
+            "trust_remote_code": True,
+            "attention_backend": "FLASHINFER",  # Avoid Triton bug #49716
+        }
+
+        # Enable automatic KV-cache scale calibration for FP8
+        if kv_cache_dtype == "fp8":
+            llm_kwargs["calculate_kv_scales"] = True
+            print(f"  Enabling automatic KV-cache scale calibration (calculate_kv_scales=True)")
+
+        llm = LLM(**llm_kwargs)
         print("✓ vLLM initialized successfully")
     except Exception as e:
         print(f"✗ Failed to initialize vLLM: {e}")
