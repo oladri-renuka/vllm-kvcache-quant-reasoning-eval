@@ -1,0 +1,725 @@
+{
+  "total_problems": 100,
+  "by_category": {
+    "NO_FAILURE": 65,
+    "PREMISE_HIJACKING": 15,
+    "SHORTCUT_COLLAPSE": 11,
+    "OVERCOUNTING": 1,
+    "HOLLOW_CONVERGENCE": 8
+  },
+  "by_source": {
+    "aime": {
+      "NO_FAILURE": 2,
+      "PREMISE_HIJACKING": 15,
+      "SHORTCUT_COLLAPSE": 11,
+      "OVERCOUNTING": 1,
+      "HOLLOW_CONVERGENCE": 1
+    },
+    "gsm8k": {
+      "NO_FAILURE": 63,
+      "HOLLOW_CONVERGENCE": 7
+    }
+  },
+  "all_scores": [
+    {
+      "problem_id": 1,
+      "source": "aime",
+      "category": "NO_FAILURE",
+      "explanation": "The reasoning is robust and mathematically sound: the model correctly converts base-b representations to base 10, establishes the divisibility condition, derives the formula b = 7(k-1)/(9-k), systematically tests integer values of k to find valid bases, properly validates that b > 9 and that digits are valid in base b, and arrives at the correct answer of 70 through complete and transparent logical steps.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 2,
+      "source": "aime",
+      "category": "PREMISE_HIJACKING",
+      "explanation": "The model accepted the false premise that all points lie on a one-dimensional line (placing them all on the x-axis with y-coordinate 0), which eliminated the vertical dimension needed for area calculations; this flawed foundation made it impossible to correctly compute areas despite otherwise sound geometric reasoning.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 3,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model failed to enumerate all valid solutions to c' + v' + s' = 5 with c' \u2265 v' + 1 and v' \u2265 s' + 1, missing solutions like (c', v', s') = (3, 2, 0), (4, 1, 0), and (5, 0, 0) that satisfy the constraints, thereby bypassing necessary systematic enumeration and reaching an incomplete answer.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 4,
+      "source": "aime",
+      "category": "OVERCOUNTING",
+      "explanation": "The model correctly identified that solutions from equation 1 (19 pairs) and equation 2 (201 pairs) should be combined, but failed to recognize that the point (0,0) satisfies both equations simultaneously, causing it to be counted twice in the final sum of 220 instead of the correct 219, and more critically, the factorization itself is incorrect\u2014the original equation factors as (3x-2y)(4x+3y)=0, not (144x+132y)(x-y)=0, leading to a fundamentally wrong solution set.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 5,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model outlined a correct framework for solving the problem but bypassed all necessary intermediate calculations in Steps 3-5, jumping directly to a final answer of N=5040 without actually enumerating the valid digit partitions, checking divisibility by 11, or accounting for the constraint that the last digit must be even, resulting in an unjustified and incorrect conclusion.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 6,
+      "source": "aime",
+      "category": "PREMISE_HIJACKING",
+      "explanation": "In Step 2, the model incorrectly assumed that the height of the trapezoid equals the diameter of the inscribed circle (h = 2r = 6), but instead claimed h = 3 (the radius), which is a false premise that invalidates all subsequent reasoning despite being internally consistent thereafter.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 7,
+      "source": "aime",
+      "category": "PREMISE_HIJACKING",
+      "explanation": "The model accepted the false premise that G can only appear in the last word if it is paired with H, when in fact G can be in the last word when paired with any letter from I through L, or even with letters A through F depending on what other pairs are formed\u2014the model's entire analysis is built on this incorrect foundational assumption about which pairings lead to G being in the lexicographically largest word.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 8,
+      "source": "aime",
+      "category": "PREMISE_HIJACKING",
+      "explanation": "The model incorrectly assumed that k is a complex number with real and imaginary parts (Re(k) and Im(k)), when the problem explicitly states 'Let k be a real number,' causing all subsequent reasoning about the second equation to be built on this false foundation.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 9,
+      "source": "aime",
+      "category": "PREMISE_HIJACKING",
+      "explanation": "In Step 5, the model incorrectly assumes that y' = y (i.e., that the rotated point has the same y-coordinate as the original point), which is a false premise that invalidates all subsequent reasoning; the correct approach requires finding where a point on the original parabola equals a point on the rotated parabola, not assuming they share the same y-coordinate.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 10,
+      "source": "aime",
+      "category": "PREMISE_HIJACKING",
+      "explanation": "The model accepted the false premise that the 3\u00d73 blocks are 'essentially each row of the grid' and that the constraint is automatically satisfied, when in fact the 3\u00d73 blocks are vertical divisions of the grid that impose additional constraints beyond row permutations, requiring a much more complex counting argument involving Latin rectangles and their extensions.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 11,
+      "source": "aime",
+      "category": "PREMISE_HIJACKING",
+      "explanation": "The model accepted the false premise that intersection points must come in symmetric pairs (\u00b1y) that cancel to zero, failing to recognize that the parabola x = 34y\u00b2 only exists for x \u2265 0, which fundamentally restricts which portions of the piecewise function can actually intersect it and breaks the assumed symmetry.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 12,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model correctly derived the inequality constraints but then abruptly jumped to identifying triangle vertices without showing how these specific points were obtained or verifying they satisfy all constraints, and crucially failed to account for the third constraint from the second inequality (y - z)(1 + x) < 0, which should produce an additional boundary condition that was never incorporated into the final region definition.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 13,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model bypassed the rigorous combinatorial analysis required for this problem by applying an oversimplified and unjustified formula (R_n \u2248 (n\u00b2+n+2)/2) without deriving it from first principles, failing to account for the constraint that segments must connect points in different quadrants, which fundamentally affects intersection probabilities and region counts.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 14,
+      "source": "aime",
+      "category": "HOLLOW_CONVERGENCE",
+      "explanation": "The model arrives at 55 instead of the correct answer 60, and the reasoning lacks rigorous justification for key claims\u2014particularly the assertion that f(X) = 26 + 26\u221a3 is minimized, the construction of equilateral triangles, and how the Fermat point applies to this specific pentagon configuration, making the derivation fundamentally incomplete despite attempting to invoke valid geometric concepts.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 15,
+      "source": "aime",
+      "category": "PREMISE_HIJACKING",
+      "explanation": "The model accepted without justification the false premise that the number of solutions to a^3 + b^3 + c^3 \u2261 0 (mod 3^7) with a,b,c \u2264 3^6 equals 3^19, when in fact this requires careful lifting-the-exponent analysis and Hensel's lemma considerations that were never performed, leading to an incorrect formula being applied as if it were established fact.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 16,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's reasoning chain is incomplete and truncated at Step 4\u2014the area calculation is cut off mid-computation without showing the final arithmetic steps, making it impossible to verify whether the calculation was completed correctly or if a computational error occurred that led to the wrong answer instead of 468.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 17,
+      "source": "aime",
+      "category": "NO_FAILURE",
+      "explanation": "The reasoning is robust and mathematically sound: the model correctly applies the Remainder Theorem to find that n+2 must divide 39, systematically identifies all divisors of 39, solves for n in each case, filters for positive integers, and correctly sums the valid solutions.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 18,
+      "source": "aime",
+      "category": "PREMISE_HIJACKING",
+      "explanation": "The model accepted the false premise that each of the 12 segments can be independently colored with 2 choices each, when in fact the constraint that each square must have exactly 2 red and 2 blue sides creates interdependencies that severely restrict the valid colorings, reducing the actual answer from 256 to 82.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 19,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model claimed that after cancellation, the product reduces to 3\u00b765/(1\u00b72\u00b74\u00b764) without showing the detailed telescoping work for either the (k-1)(k+1)/(k-2)(k+2) terms or the log terms, making an unjustified leap that omitted critical intermediate cancellations necessary to arrive at the correct answer of 106.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 20,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "In Step 4, the model unjustifiably assumed that all six arcs are symmetrically divided and that the remaining arcs (HJ and FG) each equal (360\u00b0 - 84\u00b0)/6 = 46\u00b0, without deriving the actual positions of points G, H, and J on the circle or computing their arc measures from the geometric constraints of the cevians BD, AE, and AF intersecting the nine-point circle.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 21,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "In Step 5, the model failed to properly compute the areas of triangles DGF and CHG using the correct geometric formula with actual coordinates; instead, it assumed both areas equal 2xy without calculating the actual perpendicular distances and base lengths, thereby bypassing the necessary constraint that should determine the unique values of x and y.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 22,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model incorrectly claimed that any subset containing {3^4, 5^2, 2025} automatically has LCM = 2025, bypassing the critical requirement that the subset must contain at least one divisor achieving each prime power (3^4 and 5^2 independently), and failed to properly count subsets where LCM = 2025 using inclusion-exclusion over the lattice of divisors.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 23,
+      "source": "aime",
+      "category": "PREMISE_HIJACKING",
+      "explanation": "The model accepted the false premise that the greedy algorithm always succeeds for all positive integers N, then reasoned correctly from that flawed foundation to conclude 1000, when in fact the problem explicitly states the greedy algorithm fails for some values (like N=42) and requires identifying exactly which values it succeeds for.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 24,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model correctly set up the problem and identified that n=30, but then abruptly abandoned the calculation of t (tangency points) mid-reasoning without completing the analysis of which solutions satisfy both f(x)=0 and f'(x)=0, failing to show the required intermediate work to determine t and compute n+t.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 25,
+      "source": "aime",
+      "category": "PREMISE_HIJACKING",
+      "explanation": "The model misinterpreted the problem constraint 'no person sits next to two other people' as 'no two selected chairs are adjacent,' when the actual constraint allows adjacent chairs as long as no single chair has people on both sides, fundamentally changing the valid subset definition.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 26,
+      "source": "aime",
+      "category": "PREMISE_HIJACKING",
+      "explanation": "The model incorrectly assumed in Step 1 that all segments of equal length must connect vertices exactly 12 apart (diametrically opposite), when in fact segments of equal length in a regular 24-gon can connect vertices at various distances (e.g., 2 apart, 4 apart, 6 apart, etc.), and the problem requires counting all valid perfect matchings using ANY equal-length chord type, not just diametral chords.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 27,
+      "source": "aime",
+      "category": "PREMISE_HIJACKING",
+      "explanation": "Possible flawed assumption",
+      "is_correct": false
+    },
+    {
+      "problem_id": 28,
+      "source": "aime",
+      "category": "PREMISE_HIJACKING",
+      "explanation": "The model assumed without justification that the sequence converges to its limit value, then concluded that x_2025 equals the limit L = 1/2, when in fact the problem asks for the exact rational value at step 2025, not the asymptotic limit\u2014the sequence may not have reached convergence by step 2025, and the actual value requires computing the exact rational form at that specific index.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 29,
+      "source": "aime",
+      "category": "PREMISE_HIJACKING",
+      "explanation": "The model assumed without justification that triangle AKL is equilateral with side length 14, when the constraint AK = AL = KL = 14 only guarantees this is isosceles; the model then built all subsequent reasoning on this unverified assumption that led to an incorrect decomposition of the triangle's area.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 30,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model abandoned the derivative calculation midway and made an unjustified leap to conclude that k must equal 18, 72, or 98 without analyzing the actual critical point equation or considering that k could be any value that produces exactly two minima, bypassing the necessary algebraic work to determine the correct values of k.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 31,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The reasoning is robust and complete: each step logically follows from the previous one, all arithmetic is correct (3+4=7, 16-7=9, 9\u00d72=18), and every intermediate calculation is shown and justified.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 32,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The reasoning is robust and complete: it correctly identifies the given information, accurately calculates half of 2 as 1 bolt of white fiber, and properly sums the components (2 + 1 = 3) with all steps logically derived and mathematically sound.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 33,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The model's reasoning is robust and logically sound: it correctly calculates the total investment ($130,000), properly interprets the 150% increase as applying to the original house price ($80,000) to get the value increase ($120,000), correctly computes the new house value ($200,000), and accurately derives the profit ($70,000) as the difference between new value and total investment, with all steps clearly shown and mathematically valid.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 34,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The model's reasoning is robust and logically sound, breaking down the problem into clear steps (calculating distance per session, then total weekly distance), showing all intermediate calculations (3\u00d760=180, 3\u00d7180=540), and even providing verification by computing total sprints per week (3\u00d73=9) multiplied by distance per sprint (9\u00d760=540).",
+      "is_correct": true
+    },
+    {
+      "problem_id": 35,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The reasoning is robust and complete: it correctly identifies the total morning and afternoon feed (40 cups), calculates the total daily requirement for 20 chickens at 3 cups each (60 cups), and derives the final meal requirement through valid subtraction (60 - 40 = 20 cups), with all steps logically sound and mathematically correct.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 36,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The reasoning is robust and complete: each step logically follows from the previous one, all calculations are shown and correct, the problem structure is properly interpreted (every second glass = alternating pattern), and the final answer is derived through valid mathematical operations.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 37,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The model's reasoning is robust and complete, with each step logically derived from the problem statement: Seattle's sheep count is established, Charleston's is correctly calculated as 4\u00d7 Seattle, Toulouse's as 2\u00d7 Charleston, and the final sum is accurately computed, matching the ground truth exactly.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 38,
+      "source": "gsm8k",
+      "category": "HOLLOW_CONVERGENCE",
+      "explanation": "The model arrived at an incorrect answer (180 minutes instead of 160 minutes) due to a critical error in Step 3 where it double-counted the 20-minute update installation time by adding it both before and after the restart, when the update should only be counted once in the total sequence.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 39,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "Every intermediate step is logically sound and mathematically correct: the initial distance (180 miles) is properly calculated, each segment of the return trip is accurately computed with correct time allocations, the total distance traveled (135 miles) is correctly summed, and the final distance from home (45 miles) is properly derived through valid subtraction.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 40,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The reasoning is robust and complete: each step logically follows from the previous one, all calculations are shown and correct, the problem is properly decomposed into regular and overtime pay components, and every intermediate result is mathematically sound and verifiable.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 41,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The model's reasoning is robust and complete, with each step logically derived from the previous one: correctly identifying month 1 downloads (60), calculating month 2 as 3\u00d760=180, computing the 30% reduction for month 3 as 180-54=126, and summing all three months to reach 366.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 42,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The model's reasoning is robust and complete, with each intermediate step logically derived: it correctly identifies the three pastry types, calculates the cost for each by multiplying quantity by unit price, and then sums all three costs to reach the correct total of $694.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 43,
+      "source": "gsm8k",
+      "category": "HOLLOW_CONVERGENCE",
+      "explanation": "The model correctly calculates that 7.5n \u2265 90 yields n \u2265 12, but then incorrectly concludes the answer is 12 years when the ground truth requires adding 1 to get year 13, since after exactly 12 years he breaks even (cumulative profit = $90) and only starts earning money (profit > $90) in year 13.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 44,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The model's reasoning is mathematically rigorous and logically sound, with each step clearly derived from the previous one: it correctly tracks the remaining inventory after each transaction, properly simplifies the algebraic expression, and systematically solves the resulting equation to arrive at the correct answer of 18 vacuum cleaners.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 45,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The model's reasoning is robust and complete, with every intermediate step logically and mathematically derived from the previous one: contemporary dance students calculated correctly (4), remaining students identified (16), jazz dance students calculated from the remaining pool (4), hip-hop students determined by subtraction (12), and final percentage calculated from the total class size (60%), matching the ground truth exactly.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 46,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The model's reasoning is robust and complete: it clearly identifies the problem structure, correctly calculates the profit for each option using proper percentage arithmetic, explicitly compares the results, and arrives at the correct answer of $125 through a fully transparent and logically sound chain of steps.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 47,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The model's reasoning is logically sound: it correctly identifies that each train travels 80 miles on day one and 150 miles on day two, then properly sums these distances (80 + 150 = 230 miles per train) through valid arithmetic, with all intermediate steps clearly shown and mathematically justified.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 48,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The model's reasoning is robust and complete, with every intermediate step logically derived from the previous one: teaching earnings calculated correctly, coaching earnings calculated correctly, weekly totals summed properly, and annual salary computed by multiplying weekly earnings by weeks worked, matching the ground truth exactly.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 49,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The model's reasoning is robust and complete, with each step logically and mathematically derived from the previous one: daily consumption (3 eggs) \u2192 weekly consumption (21 eggs) \u2192 4-week total (84 eggs) \u2192 conversion to dozens (7), matching the ground truth exactly.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 50,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The model's reasoning is robust and complete, with every intermediate step logically derived: total time needed (12\u00f74=3 hrs), time already spent (1+1=2 hrs), remaining time (3-2=1 hr), distance already covered (4+2=6 mi), remaining distance (12-6=6 mi), and required speed (6\u00f71=6 mph), all following sound mathematical principles.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 51,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The model's reasoning is logically sound and mathematically rigorous: it correctly calculates water content before the spill (6.67L), accounts for the 1L spill reducing orange drink to 9L, recalculates water in remaining orange drink (6L), calculates water in pineapple drink (9L), and sums to the correct total (15L), with each step properly justified and derived from the previous one.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 52,
+      "source": "gsm8k",
+      "category": "HOLLOW_CONVERGENCE",
+      "explanation": "The model made a critical error in Step 2 by stating Raymond is 6 years younger than Samantha when the problem explicitly states Raymond was born 6 years BEFORE (earlier than) Samantha, making him 6 years older, not younger; this fundamental misreading invalidates the entire subsequent calculation despite arriving at an incorrect answer of 2 instead of the correct answer of 14.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 53,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The model's reasoning is robust and complete, with each step logically derived from the problem statement: it correctly identifies the three customer groups, calculates DVDs sold to each group through valid arithmetic (3\u00d71=3, 2\u00d72=4, 3\u00d70=0), and sums them correctly (3+4+0=7), matching the ground truth exactly.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 54,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The reasoning is robust and complete: the model correctly identifies the time interval (4 hours), applies the melting rate (2 cm/hour), and performs the multiplication (4 \u00d7 2 = 8 cm) with all steps clearly shown and logically sound.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 55,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The reasoning is robust and complete: the model correctly identifies the relationship between discounted and original price, sets up the equation 0.75P = 19.50, solves it algebraically, and verifies the answer by working backward.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 56,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The model's reasoning is robust and complete, with every intermediate step logically derived: it correctly calculates each component cost (chicken $12, milk $15, apples $6), sums them to $33, subtracts from the total payment to find pizza cost ($17), and divides by the per-box price ($8.50) to arrive at 2 boxes, matching the ground truth exactly.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 57,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The reasoning is robust and complete: each step correctly multiplies the quantity by unit price, all arithmetic is accurate (3\u00d716.50=49.50, 3\u00d722.50=67.50, 3\u00d742=126), and the final sum is correctly computed (49.50+67.50+126=243), with every intermediate calculation visible and verifiable.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 58,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The reasoning is robust and complete: each step logically follows from the previous one (60 days \u00d7 1 serving/day = 60 servings; 60 servings \u00f7 15 servings/carton = 4 cartons; 4 cartons \u00d7 $4/carton = $16), with all calculations explicitly shown and mathematically sound.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 59,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The model's reasoning is logically sound and mathematically rigorous: it correctly identifies the first stop position (20 miles), calculates the second stop position (60 - 15 = 45 miles), and derives the distance between stops (45 - 20 = 25 miles) through valid arithmetic operations on clearly defined reference points.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 60,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The model correctly identifies all given information, systematically derives each intermediate value (second heels cost = $66, total heels cost = $99), properly translates the word problem into a mathematical equation (99 = B - 5), solves it algebraically, and verifies the answer against the original constraints.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 61,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "Every step is logically sound and mathematically rigorous: the ratio is correctly set up, the algebraic manipulation is valid, the substitution and simplification are correct, and the final calculation is accurate.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 62,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "Every intermediate step is logically sound and mathematically correct: the second friend's guess is properly calculated as 20 + (80/2) = 60, the third friend's guess as 80 \u00d7 1.25 = 100, the total as 80 + 60 + 100 = 240, and the average as 240 \u00f7 3 = 80, with all calculations shown and justified.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 63,
+      "source": "gsm8k",
+      "category": "HOLLOW_CONVERGENCE",
+      "explanation": "While the core mathematical reasoning in Steps 1-3 is sound and correct, the response devolves into excessive, meaningless repetition of the final answer with redundant notes that add no logical value, indicating the model reached the correct answer but then engaged in hollow padding rather than maintaining reasoning integrity.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 64,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The model establishes two clear equations from the problem constraints, performs valid algebraic substitution and simplification, correctly solves for the intermediate variable (silver coins), and then accurately back-substitutes to find the final answer with all steps logically sound and mathematically rigorous.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 65,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The model's reasoning is logically sound and mathematically valid: it correctly identifies variables, establishes the three relationships from the problem statement, substitutes R=40 into the equation for A to get A=25, then uses that to calculate S=23, with each step following directly from the previous one.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 66,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The reasoning is robust and complete: each step logically follows from the previous one, with clear calculations showing 25% of 4 equals 1 point, then 4+1=5 points in the second period, and finally 4+5=9 total points.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 67,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The model's reasoning is logically sound and mathematically valid at every step: correctly calculating the per-unit cost ($1.25), the daily cost ($2.50), and the 30-day total ($75.00), with all intermediate calculations clearly shown and derivable from the previous steps.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 68,
+      "source": "gsm8k",
+      "category": "HOLLOW_CONVERGENCE",
+      "explanation": "The model correctly identifies the contradiction in the problem statement and solves for the actual number of lego sets sold (11), but then abandons sound reasoning by concluding the answer is 0 based on a misinterpretation that he 'sold more than he initially had,' when the correct answer of 2 remaining sets (13 - 11) follows directly from the valid equation it derived.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 69,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The model's reasoning is logically sound and mathematically correct at every step: it correctly identifies the three running days with their respective durations (3, 1.5, and 1.5 hours), accurately sums them to 6 total hours, and properly applies the speed formula (distance/time) to arrive at 10 mph, with all intermediate calculations clearly shown and valid.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 70,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "Every intermediate step is logically sound and mathematically derived from the previous one: skipping speed correctly converts to running speed, running speed correctly converts to walking speed, time allocations are correctly calculated from the given fractions, distances are correctly computed using the distance formula, and the final sum is accurate.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 71,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The reasoning is robust and logically sound: each step clearly identifies the given information, applies the correct mathematical operations in sequence, and explicitly shows all intermediate calculations (Suzy's iPhone = 1 year, Ben's iPhone = 2\u00d71 = 2 years, Brandon's iPhone = 4\u00d72 = 8 years), with proper variable definitions and substitutions throughout.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 72,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The reasoning is robust and complete: each step logically follows from the previous one, all calculations are shown and correct, and the final answer of 200 feet is properly derived from the constraint that Polly must stand beyond the dragon's 1000-foot flame reach while being able to throw the javelin 1200 feet with the gemstone.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 73,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The reasoning is robust and complete: it correctly identifies the initial total (5 pies \u00d7 8 pieces = 40 pieces), clearly states the remaining pieces (14), and logically derives the answer through straightforward subtraction (40 - 14 = 26), with all steps visible and mathematically sound.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 74,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The model's reasoning is logically sound and mathematically valid: it correctly calculates remaining calories (200), determines grams per serving (60g), and applies the proportion (200/250 \u00d7 60 = 48g) to reach the correct answer through transparent, verifiable steps.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 75,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "Every intermediate step is logically sound and mathematically correct: the beeswax requirement is properly calculated from the ratio, the total cost is correctly derived from the per-pound cost, revenue is accurately computed from unit price and quantity, and net profit is correctly calculated as revenue minus cost.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 76,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The model's reasoning is robust and logically sound, with each step clearly derived from the previous one: correctly calculating Tuesday's articles (5 + 2/5*5 = 7), Wednesday's articles (2*7 = 14), total articles (5+7+14 = 26), and final hours (26*4 = 104), matching the ground truth exactly.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 77,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The model correctly identifies all variables, sets up the proper equation (80 + x - 220 = 23), performs valid algebraic manipulations (combining like terms, isolating the variable), and arrives at the correct answer of 163 through transparent, logically sound steps.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 78,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "Every intermediate step is logically sound and mathematically correct, with clear derivations from the problem statement: blue ties calculated from total spent and unit cost, red ties from the 2x relationship, red tie cost from the 50% markup, and final total from summing both categories.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 79,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The reasoning is robust and complete: the model correctly converts 4 feet to 48 inches using the proper conversion factor (1 foot = 12 inches), then correctly divides 48 by 6 to obtain 8 pieces, with all intermediate steps clearly shown and mathematically sound.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 80,
+      "source": "gsm8k",
+      "category": "HOLLOW_CONVERGENCE",
+      "explanation": "Step 2 is incomplete and cuts off mid-sentence ('Use the formula for time, which') without actually stating or applying the formula, leaving a critical gap in the reasoning chain despite the correct answer being stated.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 81,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The model's reasoning is robust and logically sound, with each step clearly derived from the previous one: daily production \u2192 daily dozens \u2192 daily revenue \u2192 weekly revenue, all calculations are correct and mathematically justified.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 82,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The model's core reasoning is logically sound: it correctly calculates the outbound distance (3 hours \u00d7 10 mph = 30 miles) and then correctly applies the distance-speed-time formula to find the return time (30 miles \u00f7 6 mph = 5 hours), with all intermediate steps clearly shown and mathematically valid, though the response contains excessive boilerplate and repetitive closing remarks that detract from clarity.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 83,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "Every intermediate step is logically sound and mathematically correct: comic book weight is properly calculated (30 \u00d7 0.25 = 7.5), remaining weight needed is correctly determined (15 - 7.5 = 7.5), and the final division is accurately performed (7.5 \u00f7 0.5 = 15), with all calculations shown and justified.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 84,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The reasoning is robust and complete: each calculation step is explicitly shown and mathematically sound, all intermediate values are clearly derived, the comparison between days is properly executed, and the final answer logically follows from the established premises.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 85,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The model's reasoning is robust and complete: it correctly identifies all three kitten sources (7 adopted, 21 from Patchy via 3\u00d77, and 12 from Trixie), properly interprets the problem statement, and accurately performs all arithmetic operations to reach the correct total of 40 kittens.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 86,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The reasoning is robust and complete: the model correctly identifies the initial quantity, properly subtracts the eaten lollipops to get 28, and then correctly divides by 2 to determine 14 bags can be filled, with each step logically following from the previous one.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 87,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The reasoning is robust and complete: each step logically follows from the previous one, all calculations are shown and correct, and a verification step confirms the answer, making this a sound and transparent reasoning chain.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 88,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The reasoning is robust and complete: the model correctly identifies variables, sets up the appropriate inequality constraint, performs valid algebraic manipulations (subtraction and division), and arrives at the correct answer of 83 boxes through logically sound steps that are all visible and verifiable.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 89,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The model's reasoning is robust and mathematically sound, with each step logically derived from the previous one: calculating the 25% fee ($10), adding it to the base bill ($50), then sequentially adding the delivery fee ($53) and tip ($57), matching the ground truth exactly.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 90,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The model's reasoning is logically sound and mathematically valid: it correctly identifies the two components (clustered and individual fruit), accurately calculates the clustered total (6 \u00d7 20 = 120), and properly sums both components (120 + 67 = 187) with all steps clearly shown and justified.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 91,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The model's reasoning is robust and complete: it correctly identifies all given values (1 bad, 20% unripe = 5, 2 sour), explicitly calculates the percentage, sums the non-good oranges (1+5+2=8), and subtracts from the total (25-8=17) with all steps clearly shown and mathematically sound.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 92,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The reasoning is robust and complete: each step logically follows from the previous one, all calculations are shown and correct, and the final answer of $1430 is properly derived from the sum of materials ($500), construction ($800), and insurance (10% of $1300 = $130).",
+      "is_correct": true
+    },
+    {
+      "problem_id": 93,
+      "source": "gsm8k",
+      "category": "HOLLOW_CONVERGENCE",
+      "explanation": "The model misinterpreted the pension structure by adding 5% annually to a base pension rather than accumulating 5% per year for each year worked after 20 years, resulting in $52,500 instead of the correct $25,000 (50% of $50,000 after 10 years \u00d7 5%/year).",
+      "is_correct": true
+    },
+    {
+      "problem_id": 94,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The model's reasoning is robust and logically sound, with each step clearly derived from the previous one: correctly identifying 6 months per half-year, calculating the first half charge ($840), computing the 10% discount ($14), determining the reduced monthly rate ($126), calculating the second half charge ($756), and summing both periods to reach the correct total ($1596).",
+      "is_correct": true
+    },
+    {
+      "problem_id": 95,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The reasoning is robust and logically sound: it correctly identifies the given information, derives the fuel efficiency (100 miles \u00f7 4 gallons = 25 mpg) from the observed consumption, and then applies this rate to the full tank capacity (25 mpg \u00d7 12 gallons = 300 miles), with each step clearly justified and mathematically valid.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 96,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The reasoning is robust and complete: each step logically follows from the previous one, all calculations are shown and correct, and the chain of logic (per-session hours \u2192 weekly hours \u2192 4-week total) is transparent and sound.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 97,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The model's reasoning is robust and complete, with each step logically derived from the problem statement: correctly identifying 2 teams per school, calculating 10 players and 2 coaches per school for 12 total per school, then multiplying by 4 schools to reach 48 people.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 98,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "Every intermediate step is logically derived from the problem statement with explicit calculations shown: rubies are correctly computed as 175-35=140, emeralds as 2\u00d7140=280, and the final sum is correctly calculated as 175+140+280=595 with all arithmetic verified.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 99,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "Every step is logically sound and mathematically correct: boys are correctly calculated as 2\u00d760=120, total students as 120+60=180, and teachers as 180\u00f75=36, with clear justification for each operation.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 100,
+      "source": "gsm8k",
+      "category": "NO_FAILURE",
+      "explanation": "The reasoning is robust and complete: the model correctly identifies the problem structure, calculates the total allowance received ($5 \u00d7 8 = $40), sets up the correct equation (initial amount + allowance = final total), and solves it algebraically (x + 40 = 100, therefore x = 60), with all steps logically derived and mathematically sound.",
+      "is_correct": true
+    }
+  ]
+}

@@ -1,0 +1,722 @@
+{
+  "total_problems": 100,
+  "by_category": {
+    "SHORTCUT_COLLAPSE": 94,
+    "UNKNOWN": 2,
+    "CONFIDENCE_SNOWBALLING": 1,
+    "HOLLOW_CONVERGENCE": 3
+  },
+  "by_source": {
+    "aime": {
+      "SHORTCUT_COLLAPSE": 27,
+      "UNKNOWN": 2,
+      "CONFIDENCE_SNOWBALLING": 1
+    },
+    "gsm8k": {
+      "SHORTCUT_COLLAPSE": 67,
+      "HOLLOW_CONVERGENCE": 3
+    }
+  },
+  "all_scores": [
+    {
+      "problem_id": 1,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's output is corrupted/nonsensical (a string of zeros and eights), indicating a complete failure to perform the required mathematical reasoning\u2014converting base-b representations to decimal, finding divisibility conditions, and summing valid bases\u2014rather than showing any logical steps or intermediate work.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 2,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's output is corrupted/garbled alphanumeric noise rather than mathematical reasoning, indicating a complete failure to engage with the problem logic and an immediate collapse into nonsensical token generation rather than performing the required geometric and area calculations.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 3,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model completely failed to engage with the mathematical problem, producing only incoherent token sequences and repeated zeros instead of performing the required combinatorial analysis of distributing 9 players among three ice cream flavors with strict inequality constraints.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 4,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model provided only zeros as reasoning and answer instead of performing the necessary algebraic steps to factor the quadratic equation 12x\u00b2 - xy - 6y\u00b2 = 0 and systematically count valid integer pairs, representing a complete bypass of required logical work.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 5,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model provided only zeros as reasoning and answer, completely bypassing all necessary logical steps including divisibility analysis by 22 (requiring divisibility by both 2 and 11), constraint satisfaction on digit permutations, and the actual counting computation.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 6,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model provided only a binary string instead of any mathematical reasoning, completely bypassing all necessary logical steps to solve the trapezoid problem and hallucinating a response format that bears no relation to the required mathematical work.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 7,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's output is corrupted/nonsensical gibberish ('20 aE000...') rather than coherent reasoning, indicating it completely bypassed the necessary logical steps of analyzing pairings, alphabetical ordering, and probability calculation without showing any intermediate work or valid mathematical reasoning.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 8,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's reasoning chain is completely corrupted/garbled output (random characters and numbers) rather than coherent mathematical steps, indicating a catastrophic failure to perform any logical reasoning or intermediate work necessary to solve this complex system of equations problem.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 9,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model provided no reasoning chain whatsoever\u2014only strings of zeros for both reasoning and answer\u2014indicating a complete failure to engage with the problem's mathematical requirements, bypassing all necessary logical steps for solving the rotation and intersection problem.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 10,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model provided only a binary string (with a single '1' at position 23) instead of any mathematical reasoning, completely bypassing the required logical steps to count valid 3\u00d79 grid configurations and factor the result into the form p^a\u00b7q^b\u00b7r^c\u00b7s^d.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 11,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's reasoning chain is completely corrupted/garbled output containing no actual mathematical work, representing a total bypass of necessary logical steps to solve the intersection problem between the piecewise function and parabola.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 12,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model provided no reasoning chain whatsoever\u2014only strings of zeros\u2014indicating a complete failure to engage with the problem's logical structure, bypassing all necessary steps of analyzing the inequalities, finding the plane intersection, identifying the three regions, and computing the finite region's area.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 13,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's reasoning chain consists entirely of zeros with no actual mathematical work shown, indicating a complete bypass of necessary logical steps to calculate the expected number of regions using Euler's formula for planar graphs and probability analysis of line intersections.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 14,
+      "source": "aime",
+      "category": "UNKNOWN",
+      "explanation": "Empty or error output",
+      "is_correct": false
+    },
+    {
+      "problem_id": 15,
+      "source": "aime",
+      "category": "CONFIDENCE_SNOWBALLING",
+      "explanation": "Wrong answer with unclear failure mode",
+      "is_correct": false
+    },
+    {
+      "problem_id": 16,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model provided no reasoning chain whatsoever\u2014only a string of zeros\u2014indicating a complete failure to engage with the problem's logical steps, bypassing all necessary intermediate work required to set up coordinates, find point positions, and calculate the triangle area.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 17,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model output is a decimal number (.0001...) rather than any mathematical reasoning or integer answer, indicating a complete bypass of the required divisibility analysis and algebraic work needed to find positive integers satisfying the divisibility condition.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 18,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model produced only zeros instead of any reasoning chain, completely bypassing the necessary logical steps to enumerate valid colorings of the 2\u00d72 grid under the given constraints, indicating a fundamental failure to engage with the problem structure.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 19,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model provided only zeros as reasoning and answer, completely bypassing all necessary logical steps including logarithm simplification, telescoping product analysis, and fraction reduction that are required to solve this problem.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 20,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's output is corrupted/garbled text (E0E)E0N00E)E)E...) rather than coherent mathematical reasoning, indicating it completely bypassed the necessary logical steps of calculating arc measures on the circumcircle of the medial triangle and instead hallucinated or failed to produce any valid intermediate work.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 21,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model output is corrupted/nonsensical gibberish (strings of 'E', '0', '1', '2', ')' characters) rather than actual mathematical reasoning, indicating a complete bypass of necessary logical steps and hallucination of a solution without any valid intermediate work.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 22,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model completely failed to engage with the mathematical problem, producing only incoherent token repetitions instead of performing any logical reasoning steps, thereby bypassing all necessary intermediate work required to solve the combinatorial problem about divisors and LCM.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 23,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's output is corrupted/garbled text containing random characters, numbers, and code fragments rather than any mathematical reasoning, indicating a complete failure to engage with the problem logic and an unjustified leap to a nonsensical output.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 24,
+      "source": "aime",
+      "category": "UNKNOWN",
+      "explanation": "Empty or error output",
+      "is_correct": false
+    },
+    {
+      "problem_id": 25,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model completely bypassed the mathematical reasoning required to solve this combinatorial problem, producing incoherent garbled output with random numbers and characters instead of performing the necessary dynamic programming or recurrence relation analysis to count valid chair selections.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 26,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model provided only zeros as reasoning and answer, completely bypassing all necessary logical steps required to analyze chord lengths in a regular 24-gon, classify valid pairings by distance, and count valid perfect matchings\u2014hallucinating a connection to the answer without any intermediate work.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 27,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model produced only zeros as reasoning and answer, completely bypassing all necessary logical steps including calculating the side lengths from the area and angle constraints, applying the perimeter condition, and deriving the final expression in the required form.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 28,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model provided only zeros as reasoning and answer, completely bypassing all necessary logical steps including computing x_2, analyzing the recurrence relation, identifying any fixed points or periodic behavior, and performing the required modular arithmetic\u2014representing a total failure to show any intermediate work or valid inference chain.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 29,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model provided no reasoning chain whatsoever\u2014only strings of zeros\u2014indicating a complete failure to engage with the problem's logical structure, bypassing all necessary geometric analysis, constraint equations, and intermediate calculations required to solve this complex configuration problem.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 30,
+      "source": "aime",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's output is corrupted/garbled text consisting only of '0', 'I', and 'f' characters, indicating a complete failure to engage with the mathematical problem and an unjustified leap to a nonsensical answer without any logical reasoning steps.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 31,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's reasoning chain completely collapsed into nonsensical output (repeated '0's and garbled text like 'Netty, mingle950000000001...'), bypassing all necessary logical steps of calculating eggs eaten (3), eggs used for baking (4), remaining eggs (9), and final revenue (9 \u00d7 $2 = $18), indicating a fundamental failure to engage with the problem structure.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 32,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model completely bypassed all logical reasoning steps and produced incoherent gibberish (repeated nonsensical phrases and zeros) instead of performing the basic arithmetic required to solve the problem, demonstrating a total failure to engage with the question's logical structure.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 33,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model reasoning and answer consist entirely of zeros with no logical steps shown, representing a complete failure to engage with the problem and a hallucinated non-answer rather than any actual reasoning chain.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 34,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model produced only zeros instead of any reasoning chain, completely bypassing all necessary logical steps (calculating 3\u00d73=9 sprints, then 9\u00d760=540 meters) and failing to generate any intermediate work or final answer.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 35,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model completely bypassed all logical reasoning steps and generated a nonsensical string of zeros with a leading '01' instead of performing the required arithmetic calculations (3*20=60, then 60-15-25=20), representing a total failure to engage with the problem structure.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 36,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's reasoning chain completely collapsed into nonsensical output (repeated zeros and garbled text) rather than performing the basic arithmetic steps required to solve the problem, indicating a fundamental failure to execute the necessary logical steps.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 37,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's output is corrupted/nonsensical (repeated zeros and incomplete text), indicating a complete failure to perform the required logical steps or generate coherent reasoning, bypassing all necessary intermediate calculations entirely.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 38,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model reasoning and answer consist entirely of zeros with no logical steps shown, indicating a complete failure to engage with the problem and a hallucinated output rather than actual reasoning.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 39,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model reasoning and answer are entirely corrupted/null (represented as zeros), indicating a complete failure to engage with the logical problem and produce any coherent intermediate steps or final answer.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 40,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's reasoning chain consists entirely of zeros with no logical steps, calculations, or intermediate work shown, representing a complete bypass of necessary reasoning to reach any answer.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 41,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's reasoning and answer consist entirely of repeated garbage characters ('john' followed by zeros), indicating a complete failure to engage with the problem logic or perform any actual computational steps, representing a total bypass of necessary reasoning.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 42,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's output is completely incoherent gibberish (repeated 'numberss2222290000...' strings) rather than any logical reasoning chain, indicating a catastrophic failure to perform even basic computational steps or maintain coherent token generation, bypassing all necessary arithmetic operations entirely.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 43,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model provided no reasoning chain at all\u2014only zeros\u2014which represents a complete bypass of all necessary logical steps (calculating annual revenue, net profit, payoff period, and final year), making it impossible to determine if any intermediate work was attempted.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 44,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model reasoning and answer consist entirely of zeros with no logical steps shown, indicating a complete failure to engage with the problem and a hallucinated non-response rather than any actual reasoning chain.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 45,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's reasoning chain consists entirely of corrupted/nonsensical output (repeated '0's and '9's) with no actual logical steps shown, indicating a complete bypass of necessary intermediate calculations and a hallucinated connection to reach an answer.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 46,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's reasoning and answer consist entirely of zeros (no actual reasoning provided), representing a complete failure to perform any logical steps, calculations, or comparisons needed to solve the problem\u2014a total bypass of required intermediate work.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 47,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's reasoning chain consists entirely of corrupted numerical output with no logical steps shown, indicating a complete bypass of necessary intermediate reasoning and a hallucinated connection to reach an answer.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 48,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model provided no reasoning chain whatsoever\u2014only strings of zeros for both reasoning and answer\u2014indicating a complete bypass of all necessary logical steps and calculations required to solve the problem.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 49,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's reasoning chain consists entirely of nonsensical repeated zeros rather than any logical steps, indicating a complete bypass of necessary calculations and a hallucinated output that bears no relationship to the problem's mathematical requirements.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 50,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model reasoning and answer consist entirely of zeros with no logical steps shown, indicating a complete bypass of necessary calculations and a hallucinated response rather than actual mathematical reasoning.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 51,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's reasoning chain completely collapsed into incoherent token repetition rather than performing any logical steps, representing a total failure to engage with the mathematical problem structure and bypass all necessary intermediate calculations.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 52,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model provided no reasoning chain at all\u2014only strings of zeros\u2014indicating a complete failure to engage with the logical steps required to solve the problem, representing a total bypass of necessary intermediate calculations.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 53,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's reasoning chain consists entirely of null/zero characters with no actual logical steps shown, indicating a complete bypass of necessary intermediate calculations and a hallucinated connection to reach a final answer.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 54,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's reasoning and answer consist entirely of a nonsensical string of zeros with no logical steps, calculations, or intermediate work shown, representing a complete bypass of the required mathematical reasoning to arrive at the correct answer of 8 centimeters.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 55,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's reasoning chain is completely corrupted/unintelligible (showing only 'is_nums2 days' and repeated zeros), indicating it bypassed all necessary logical steps and failed to perform the required arithmetic to solve the discount problem, producing no valid intermediate work or coherent reasoning path.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 56,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model reasoning and answer consist entirely of zeros with no logical steps shown, indicating a complete bypass of necessary calculations and an unjustified leap to a final answer without any intermediate work or reasoning chain.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 57,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model bypassed all logical steps and arithmetic calculations entirely, producing a nonsensical string of zeros instead of performing the required multiplication and addition operations (3 \u00d7 (16.50 + 22.50 + 42) = 243).",
+      "is_correct": false
+    },
+    {
+      "problem_id": 58,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model reasoning and answer are both completely empty (represented only by zeros), indicating the model failed to perform any logical steps or calculations whatsoever, bypassing all necessary intermediate work required to solve the problem.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 59,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's reasoning chain consists entirely of corrupted/nonsensical output (repeated zeros and 'to make' fragments), indicating a complete failure to perform any logical steps or intermediate work, bypassing all necessary calculations to reach the answer.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 60,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's reasoning chain consists entirely of null/zero characters with no actual logical steps shown, indicating a complete bypass of necessary intermediate calculations and a hallucinated connection to reach the final answer.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 61,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's output is corrupted/nonsensical data (repeated zeros and decimal points) rather than any logical reasoning, indicating a complete bypass of the required mathematical steps and a failure to produce coherent intermediate work.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 62,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's reasoning chain consists entirely of corrupted/nonsensical output (repeated zeros and garbled text) rather than any logical steps, indicating a complete bypass of necessary computational work and an inability to perform even the most basic intermediate calculations.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 63,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model bypassed all logical steps and hallucinated an astronomically large number with no connection to the arithmetic required (10 \u00d7 0.5 \u00d7 7 = 35), demonstrating a complete failure to perform or show the necessary intermediate calculations.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 64,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model produced only zeros instead of any reasoning chain, completely bypassing all logical steps required to solve the problem and failing to show any intermediate work or calculation.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 65,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model completely bypassed all logical reasoning steps and hallucinated an astronomically large number with no connection to the problem's mathematical operations, demonstrating a total failure to perform the required intermediate calculations (40/2, +5, -2).",
+      "is_correct": false
+    },
+    {
+      "problem_id": 66,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's reasoning chain consists entirely of zeros with no logical steps, calculations, or intermediate work shown, representing a complete failure to engage with the problem and a hallucinated connection to the correct answer.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 67,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model reasoning consists entirely of zeros with no logical steps shown, representing a complete failure to engage with the problem and an unjustified leap to an answer without any intermediate work or calculation.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 68,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model reasoning and answer consist entirely of zeros with no logical steps shown, representing a complete bypass of all necessary intermediate calculations and a failure to engage with the problem at all.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 69,
+      "source": "gsm8k",
+      "category": "HOLLOW_CONVERGENCE",
+      "explanation": "The model's reasoning output is corrupted/garbled (consisting only of random zeros and text artifacts) and contains no actual logical steps, yet the correct answer of 10 mph was somehow produced, indicating the answer was reached through means other than the displayed reasoning chain.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 70,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's reasoning chain consists entirely of corrupted, nonsensical output (repeated zeros and fragments like 'volume recent0000001') with no logical steps shown, indicating a complete failure to engage with the problem and a bypass of all necessary intermediate calculations.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 71,
+      "source": "gsm8k",
+      "category": "HOLLOW_CONVERGENCE",
+      "explanation": "The model's reasoning output is completely incoherent gibberish consisting of repeated characters and fragments with no logical structure, yet it somehow arrived at the correct answer of 8, indicating the correct result was reached through malfunction rather than valid reasoning.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 72,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's output is corrupted binary/numerical noise that contains no coherent reasoning chain whatsoever, representing a complete failure to engage with the logical problem and an unjustified leap to an unintelligible answer.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 73,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's reasoning chain consists entirely of corrupted/nonsensical output (repeated zeros and garbled text), indicating a complete failure to perform any logical steps or intermediate calculations, bypassing all necessary reasoning to reach an answer.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 74,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model reasoning and answer consist entirely of zeros with no logical steps shown, indicating a complete failure to engage with the problem and a hallucinated response rather than actual reasoning.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 75,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model reasoning and answer are both completely empty (represented only by zeros), indicating the model bypassed all necessary logical steps and failed to produce any intermediate work or final calculation whatsoever.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 76,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model provided no reasoning chain at all\u2014only strings of zeros\u2014which represents a complete bypass of all necessary logical steps, making it impossible to trace any intermediate work from the problem setup to a final answer.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 77,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's reasoning chain consists entirely of corrupted/garbled output (repeated 'a' and '0' characters) with no logical steps shown, representing a complete failure to engage with the problem structure and an unjustified leap to an unintelligible answer.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 78,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's output is corrupted/garbled text consisting entirely of zeros and quotation marks with no logical reasoning steps shown, indicating a complete bypass of necessary computational work and a failure to process the problem at all.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 79,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's reasoning chain consists entirely of repeated zeros with no logical steps, mathematical conversions, or intermediate calculations shown, representing a complete bypass of all necessary reasoning steps to solve the problem.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 80,
+      "source": "gsm8k",
+      "category": "HOLLOW_CONVERGENCE",
+      "explanation": "The model output is corrupted gibberish containing no intelligible reasoning steps whatsoever, yet somehow arrived at the correct answer of 30, indicating the correct answer was likely generated by chance or token prediction rather than through valid logical derivation.",
+      "is_correct": true
+    },
+    {
+      "problem_id": 81,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's output is incoherent gibberish with no logical reasoning steps shown\u2014it bypassed all necessary calculations (daily to weekly production, conversion to dozens, multiplication by price) and produced nonsensical tokens instead of following the required mathematical chain.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 82,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's reasoning chain consists entirely of zeros with no actual logical steps, calculations, or intermediate work shown, representing a complete bypass of necessary reasoning to arrive at any answer.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 83,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's output is corrupted/nonsensical (repeated '0's with 'is No' prefix), indicating a complete failure to engage with the logical problem and an inability to perform even the first computational step of multiplying 30 \u00d7 0.25, representing a total bypass of necessary reasoning steps.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 84,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model bypassed all necessary arithmetic calculations and logical steps, hallucinating an astronomically large number with no connection to the problem's actual values (Thursday: $520, Friday: $480, difference: $40), indicating a complete failure to perform or show intermediate work.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 85,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's output is completely incoherent gibberish with no logical reasoning steps whatsoever, representing a total failure to engage with the problem and a complete bypass of all necessary mathematical operations.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 86,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's reasoning chain consists entirely of nonsensical character strings (mostly zeros with an '8') rather than any logical steps, indicating a complete failure to engage with the problem and a hallucinated output that bypasses all necessary intermediate reasoning.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 87,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model provided no reasoning chain or intermediate steps\u2014only garbled output consisting entirely of periods and zeros\u2014indicating a complete failure to engage with the logical problem or show any work, representing a total bypass of necessary computational steps.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 88,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's reasoning chain consists entirely of zeros with no logical steps, calculations, or intermediate work shown, representing a complete bypass of necessary reasoning to reach any answer.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 89,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model reasoning and answer fields contain only repeated zeros with no actual logical steps, indicating the model completely bypassed the necessary calculations and failed to show any intermediate work to arrive at a numerical answer.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 90,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model completely bypassed all logical reasoning steps and produced only a string of zeros with no mathematical work, calculation, or connection to the problem, representing a total failure to engage with the required intermediate steps.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 91,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's reasoning chain consists entirely of zeros with no logical steps, calculations, or intermediate work shown, representing a complete bypass of all necessary reasoning to arrive at any answer.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 92,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's reasoning chain consists entirely of zeros with no logical steps shown, indicating a complete bypass of necessary calculations (material cost + labor + insurance computation) and a hallucinated answer without any intermediate work.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 93,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's reasoning chain completely collapsed into nonsensical output (a string of zeros and nines), bypassing all logical steps required to calculate the pension amount and failing to show any intermediate work or valid computation.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 94,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's reasoning chain is completely absent\u2014it produced only a nonsensical string of digits instead of performing any logical steps, representing a total bypass of required intermediate calculations (6 months at $140, 10% reduction calculation, 6 months at reduced rate, and final summation).",
+      "is_correct": false
+    },
+    {
+      "problem_id": 95,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's reasoning chain consists entirely of zeros with no logical steps, calculations, or intermediate work shown, representing a complete bypass of the necessary reasoning required to solve the problem.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 96,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model bypassed all logical reasoning steps and hallucinated an astronomically large number with no connection to the problem's arithmetic, indicating a complete failure to perform the required intermediate calculations (2\u00f72=1, 2+1=3, 3\u00d73=9, 9\u00d74=36).",
+      "is_correct": false
+    },
+    {
+      "problem_id": 97,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's reasoning chain consists entirely of corrupted/repeated zeros with no actual logical steps, calculations, or intermediate work shown, representing a complete bypass of necessary reasoning to reach any answer.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 98,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model completely bypassed the logical reasoning steps required to solve the problem and instead output a random decimal number, failing to perform any of the necessary arithmetic calculations (computing rubies, emeralds, and the total sum).",
+      "is_correct": false
+    },
+    {
+      "problem_id": 99,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's reasoning chain consists entirely of zeros with no logical steps, calculations, or intermediate work shown, representing a complete bypass of all necessary reasoning steps to arrive at any answer.",
+      "is_correct": false
+    },
+    {
+      "problem_id": 100,
+      "source": "gsm8k",
+      "category": "SHORTCUT_COLLAPSE",
+      "explanation": "The model's reasoning chain consists entirely of corrupted/nonsensical repeated characters ('recent000...'), indicating a complete failure to perform any logical steps or intermediate calculations, bypassing all necessary reasoning to reach the answer.",
+      "is_correct": false
+    }
+  ]
+}
