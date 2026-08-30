@@ -105,13 +105,25 @@ def run_experiment(
         else:
             llm_kwargs["attention_backend"] = "FLASHINFER"  # Avoid Triton bug #49716 for other dtypes
 
-        # Enable automatic KV-cache scale calibration for FP8 (if requested)
-        if kv_cache_dtype == "fp8":
-            llm_kwargs["calculate_kv_scales"] = calibrate
-            if calibrate:
-                print(f"  Enabling automatic KV-cache scale calibration (calculate_kv_scales=True)")
-            else:
-                print(f"  Using default FP8 scales (calculate_kv_scales=False)")
+        # FP8 KV-cache scale calibration
+        #
+        # NOTE: `calculate_kv_scales` is only passed when calibration is explicitly
+        # requested (calibrate=True). Some installed vLLM versions reject
+        # `calculate_kv_scales` as an unrecognized kwarg to LLM() even when set to
+        # False (TypeError: EngineArgs.__init__() got an unexpected keyword
+        # argument 'calculate_kv_scales'). Omitting the kwarg entirely for the
+        # uncalibrated case avoids this and lets vLLM fall back to its natural
+        # default (uncalibrated, scale=1.0).
+        #
+        # This is also independent evidence for a point raised by a vLLM
+        # contributor (see vllm-project/vllm#33480 discussion and
+        # vllm-project/vllm#21640): `calculate_kv_scales` has known compatibility
+        # issues and should be treated with caution.
+        if kv_cache_dtype == "fp8" and calibrate:
+            llm_kwargs["calculate_kv_scales"] = True
+            print("  Enabling automatic KV-cache scale calibration (calculate_kv_scales=True)")
+        elif kv_cache_dtype == "fp8":
+            print("  Using default FP8 scales (no calculate_kv_scales argument passed, scale defaults to 1.0)")
 
         llm = LLM(**llm_kwargs)
         print("✓ vLLM initialized successfully")
@@ -133,6 +145,7 @@ def run_experiment(
     results = {
         "kv_cache_dtype": kv_cache_dtype,
         "model": model_name,
+        "calibrated": bool(calibrate and kv_cache_dtype == "fp8"),
         "system_info": system_info,
         "sampling_params": {
             "temperature": sampling_params.temperature,
@@ -214,6 +227,7 @@ def run_experiment(
     print("EXPERIMENT COMPLETE")
     print("="*70)
     print(f"Results saved to: {output_file}")
+    print(f"Calibrated: {results['calibrated']}")
     print(f"Successful: {successful}/{len(results['problems'])}")
     print(f"Failed: {failed}/{len(results['problems'])}")
     print(f"Avg latency: {avg_latency:.2f}s per problem")
@@ -264,7 +278,8 @@ def main():
         "--no-calibrate",
         dest="calibrate",
         action="store_false",
-        help="Disable automatic KV-cache scale calibration for FP8 (use default scale=1.0)",
+        help="Disable automatic KV-cache scale calibration for FP8 (use default scale=1.0). "
+             "Recommended given known issues with calculate_kv_scales (see vllm-project/vllm#21640).",
     )
 
     args = parser.parse_args()
