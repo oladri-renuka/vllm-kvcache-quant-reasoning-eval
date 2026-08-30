@@ -57,6 +57,7 @@ def run_experiment(
     testset_path="data/testset.jsonl",
     output_dir="results",
     num_problems=None,  # Use all if None
+    calibrate=True,  # Enable KV-cache scale calibration for FP8
 ):
     """
     Run experiment with specified KV-cache dtype.
@@ -104,10 +105,13 @@ def run_experiment(
         else:
             llm_kwargs["attention_backend"] = "FLASHINFER"  # Avoid Triton bug #49716 for other dtypes
 
-        # Enable automatic KV-cache scale calibration for FP8
+        # Enable automatic KV-cache scale calibration for FP8 (if requested)
         if kv_cache_dtype == "fp8":
-            llm_kwargs["calculate_kv_scales"] = True
-            print(f"  Enabling automatic KV-cache scale calibration (calculate_kv_scales=True)")
+            llm_kwargs["calculate_kv_scales"] = calibrate
+            if calibrate:
+                print(f"  Enabling automatic KV-cache scale calibration (calculate_kv_scales=True)")
+            else:
+                print(f"  Using default FP8 scales (calculate_kv_scales=False)")
 
         llm = LLM(**llm_kwargs)
         print("✓ vLLM initialized successfully")
@@ -250,6 +254,18 @@ def main():
         default=None,
         help="Number of problems to run (for testing). If None, use all.",
     )
+    parser.add_argument(
+        "--calibrate",
+        action="store_true",
+        default=True,
+        help="Enable automatic KV-cache scale calibration for FP8 (default: True)",
+    )
+    parser.add_argument(
+        "--no-calibrate",
+        dest="calibrate",
+        action="store_false",
+        help="Disable automatic KV-cache scale calibration for FP8 (use default scale=1.0)",
+    )
 
     args = parser.parse_args()
 
@@ -266,6 +282,7 @@ def main():
         testset_path=args.testset,
         output_dir=args.output_dir,
         num_problems=args.num_problems,
+        calibrate=args.calibrate,
     )
 
 
