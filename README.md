@@ -75,11 +75,38 @@ EXPLAINETTEETTEEXPLAINEXMATHENEXEVTENEXPLAINEXEKTEXPLAINEXMEXPONEXECON...
 
 **Calibrated FP8 (`calculate_kv_scales=True`) produces near-total generation collapse (94/100)** — not subtle reasoning-quality degradation, but a breakdown in coherent generation itself. This is notable because it runs counter to the general expectation, stated in vLLM's own documentation, that calibration improves FP8 KV-cache fidelity relative to the uncalibrated default (`scale=1.0`). We do not yet know whether uncalibrated FP8 on this same corrected dataset would be better, worse, or similar — see Limitations.
 
-## Limitations
+## Update (August 2026)
 
-- **No matched uncalibrated-FP8 result on this corrected dataset.** Our initial uncalibrated FP8 run (`scale=1.0` default) was conducted on an earlier, flawed AIME subset and is not directly comparable to the numbers above. We do not have GPU access to re-run this condition on the corrected dataset at this time. This leaves an open question we'd genuinely like help closing: **is calibration itself making things worse here, or is uncalibrated FP8 equally broken on the corrected set?** We'd welcome a reproduction from anyone with spare compute.
-- **Single model, single seed.** Results are from Qwen2.5-7B-Instruct only, one run per condition. We have not tested other model sizes/families or repeated runs to check variance.
-- **LLM-as-judge scoring**, not full human annotation (our original paper used human labeling with Cohen's kappa = 0.906; this experiment uses judge-only scoring for speed, which is a weaker evidentiary standard). Concretely, the judge mislabeled the FP8 generation-collapse outputs as `SHORTCUT_COLLAPSE` in most cases — see note above. We manually corrected this in our reporting, but the raw `scores.json` files still contain the original (incorrect) judge labels for `fp8`.
+A vLLM contributor flagged on [vllm-project/vllm#33480](https://github.com/vllm-project/vllm/issues/33480) that `calculate_kv_scales=True` is a known-problematic flag, referencing [vllm-project/vllm#21640](https://github.com/vllm-project/vllm/issues/21640). Our original `fp8` (calibrated) result used this flag. We've since re-run `fp8` **without** it (default, uncalibrated scale=1.0) on the same corrected 100-question dataset, to isolate what was caused by the flag versus FP8 KV-cache quantization itself.
+
+### Correct Answer Rate (updated)
+
+| Condition | Overall | AIME (n=30) | GSM8K (n=70) |
+|---|---|---|---|
+| `auto` (baseline) | 73% | 10.0% | 100.0% |
+| `fp8`, uncalibrated (default) | 51% | 0.0% | 72.9% |
+| `fp8`, calibrated (`calculate_kv_scales=True`) | 3% | 0.0% | 4.3% |
+| `int8_per_token_head` | 73% | 10.0% | 100.0% |
+
+### Failure Mode Breakdown (updated)
+
+| Condition | No Failure | Hollow Convergence | Shortcut Collapse | Premise Hijacking | Other |
+|---|---|---|---|---|---|
+| `auto` | 65% | 8% | 11% | 15% | 1% |
+| `fp8`, uncalibrated | 1% | 50% | 46% | 3% | 0% |
+| `fp8`, calibrated | 0% | 3% | **94%†** | 0% | 3% |
+| `int8_per_token_head` | 64% | 9% | 16% | 9% | 2% |
+
+†Generation collapse (gibberish/repetition), not genuine reasoning failure — see original note above.
+
+### Revised interpretation
+
+This resolves the open question from our original writeup. Two separate effects were conflated in the original `fp8` result:
+
+1. **The `calculate_kv_scales=True` flag itself appears broken** in our installed vLLM version — attempting to pass it even as `False` raised `TypeError: EngineArgs.__init__() got an unexpected keyword argument 'calculate_kv_scales'`, independently corroborating the compatibility issue @ivanbaldo flagged. When enabled, it produces near-total generation collapse (94%, gibberish, not reasoning failure).
+2. **FP8 KV-cache quantization itself, without that flag, still causes real (not collapse-level) reasoning degradation** on this model: accuracy drops from 73% to 51%, and correct-but-degraded reasoning (Hollow Convergence) and flawed-shortcut reasoning (Shortcut Collapse) together account for 96% of outputs, versus 19% combined at baseline. Unlike the calibrated run, these are genuine reasoning failures, confirmed by manual transcript review, not generation collapse.
+
+`int8_per_token_head` continues to closely track the unquantized baseline across both accuracy and failure-mode distribution, on both benchmarks.
 
 ## Reproducing this
 
